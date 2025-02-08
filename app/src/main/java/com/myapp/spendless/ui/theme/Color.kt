@@ -20,4 +20,4 @@ val SecondaryFixed = Color(0xFFE5EA58)
 
 val Error = Color(0xFFA40019)
 val Success = Color(0xFF29AC08)
-val Background = Color(0xFF1D1A25)
+val BackgroundBlack = Color(0xFF1D1A25)
