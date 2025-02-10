@@ -6,7 +6,7 @@ data class UserState(
     val user: User = User(
         id = 0,
         name = "",
-        pin = "12345",
-        confirmedPin = "12345"
+        pin = "",
+        confirmedPin = ""
     )
 )
