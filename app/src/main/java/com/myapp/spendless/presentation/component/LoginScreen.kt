@@ -1,6 +1,8 @@
 package com.myapp.spendless.presentation.component
 
 import android.util.Log
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxHeight
@@ -18,7 +20,6 @@ import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -39,21 +40,19 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.navigation.NavController
+import androidx.navigation.compose.rememberNavController
 import com.myapp.spendless.R
-import com.myapp.spendless.presentation.viewmodels.UserViewmodel
 import com.myapp.spendless.ui.theme.BackgroundBlack
 import com.myapp.spendless.ui.theme.Primary
 
 @Composable
-fun LoginScreen(onLoginClicked:() -> Unit) {
+fun LoginScreen(navController: NavController, onLoginClicked:() -> Unit) {
 
-    var text by remember { mutableStateOf<String>("") }
+    var text by remember { mutableStateOf("") }
+    var pin by remember { mutableStateOf("") }
     val focusManager = LocalFocusManager.current
     val focusRequester = remember { FocusRequester() }
-
-    val viewmodel: UserViewmodel = viewModel()
-    val state by viewmodel.state.collectAsState()
 
     Column(
         modifier = Modifier
@@ -91,9 +90,10 @@ fun LoginScreen(onLoginClicked:() -> Unit) {
 
         Spacer(modifier = Modifier.height(36.dp))
         OutlinedTextField(
-            value = state.user.name,
+            value = text,
             onValueChange = { newText ->
-                viewmodel.getUsername(newText)
+                text = newText
+
             },
             colors = OutlinedTextFieldDefaults.colors(
                 unfocusedContainerColor = BackgroundBlack.copy(alpha = 0.1f),
@@ -140,60 +140,16 @@ fun LoginScreen(onLoginClicked:() -> Unit) {
 
         Spacer(modifier = Modifier.height(16.dp))
 
-        OutlinedTextField(
-            value = state.user.pin,
-            onValueChange = { newText ->
-                viewmodel.getUsername(newText)
-            },
-            colors = OutlinedTextFieldDefaults.colors(
-                unfocusedContainerColor = BackgroundBlack.copy(alpha = 0.1f),
-                focusedContainerColor = BackgroundBlack.copy(alpha = 0.1f),
-                unfocusedBorderColor = Color.Transparent,
-                focusedBorderColor = Color.Transparent
-            ),
-            textStyle = TextStyle(
-                textAlign = TextAlign.Center,
-                color = Color.Gray,
-                fontSize = 16.sp,
-                fontFamily = FontFamily(Font(R.font.fig_tree_regular))
-            ),
-            keyboardOptions = KeyboardOptions.Default.copy(
-                imeAction = ImeAction.Done
-            ),
-            keyboardActions = KeyboardActions(
-                onDone = {
-                    focusManager.clearFocus()
-                }
-            ),
-            placeholder = {
-                Text(
-                    text = "PIN",
-                    color = Color.Gray,
-                    fontSize = 16.sp,
-                    modifier = Modifier,
-                    fontFamily = FontFamily(
-                        Font(
-                            R.font.fig_tree_regular
-                        )
-                    ),
-                    textAlign = TextAlign.Center
-                )
-            },
-            modifier = Modifier
-                .fillMaxWidth()
-                .align(Alignment.CenterHorizontally)
-                .padding(horizontal = 20.dp)
-                .clip(RoundedCornerShape(16.dp))
-                .focusRequester(focusRequester)
-
-        )
+        Box(modifier = Modifier .clickable { navController.navigate("PinLoginScreen/$text") }) {
+           Text("Pin")
+        }
 
         Spacer(modifier = Modifier.height(16.dp))
 
         Button(
             onClick = {
                 onLoginClicked()
-                Log.d("TAG", state.user.name)
+                Log.d("TAG", text)
             },
             colors = ButtonDefaults.buttonColors(
                 containerColor =  Primary
@@ -227,6 +183,7 @@ fun LoginScreen(onLoginClicked:() -> Unit) {
 @Preview(showBackground = true)
 @Composable
 fun LoginScreenPreview() {
-    LoginScreen {  }
+    val navController = rememberNavController()
+    LoginScreen(navController = navController){  }
 }
 

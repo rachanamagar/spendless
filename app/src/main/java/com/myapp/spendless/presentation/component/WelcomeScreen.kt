@@ -20,9 +20,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -39,21 +37,20 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.hilt.navigation.compose.hiltViewModel
 import com.myapp.spendless.R
 import com.myapp.spendless.presentation.viewmodels.UserViewmodel
 import com.myapp.spendless.ui.theme.BackgroundBlack
 import com.myapp.spendless.ui.theme.Primary
 
 @Composable
-fun WelcomeScreen(onNextClicked: () -> Unit) {
+fun WelcomeScreen(viewmodel: UserViewmodel = hiltViewModel(), onNextClicked: () -> Unit) {
 
-    var text by remember { mutableStateOf<String>("") }
     val focusManager = LocalFocusManager.current
     val focusRequester = remember { FocusRequester() }
 
-    val viewmodel: UserViewmodel = viewModel()
     val state by viewmodel.state.collectAsState()
+
 
     Column(
         modifier = Modifier
@@ -74,7 +71,7 @@ fun WelcomeScreen(onNextClicked: () -> Unit) {
         Spacer(modifier = Modifier.height(20.dp))
 
         Text(
-            text = " Welcome to SpendLess!\n" +
+            text = "Welcome to SpendLess!\n" +
                     "How can we address you?",
             fontSize = 28.sp,
             lineHeight = 36.sp,
@@ -83,7 +80,7 @@ fun WelcomeScreen(onNextClicked: () -> Unit) {
         )
         Spacer(modifier = Modifier.height(6.dp))
         Text(
-            text = " Create unique username",
+            text = "Create unique username",
             fontSize = 16.sp,
             fontFamily = FontFamily(
                 Font(R.font.fig_tree_loight)
@@ -181,5 +178,6 @@ fun WelcomeScreen(onNextClicked: () -> Unit) {
 @Preview(showBackground = true)
 @Composable
 fun WelcomeScreenPreview() {
-    WelcomeScreen({})
+    val viewmodel: UserViewmodel = hiltViewModel()
+    WelcomeScreen(viewmodel){}
 }
