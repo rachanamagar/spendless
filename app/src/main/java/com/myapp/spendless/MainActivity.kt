@@ -16,7 +16,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
-import com.myapp.spendless.presentation.component.PinList
+import com.myapp.spendless.presentation.component.LoginScreen
 import com.myapp.spendless.presentation.component.PinScreen
 import com.myapp.spendless.presentation.component.WelcomeScreen
 import com.myapp.spendless.ui.theme.SpendlessTheme
@@ -47,6 +47,10 @@ class MainActivity : ComponentActivity() {
 
                         composable("PinScreen"){
                             PinScreen(navController)
+                        }
+
+                        composable("LoginScreen"){
+                            LoginScreen(){}
                         }
 
                     }
