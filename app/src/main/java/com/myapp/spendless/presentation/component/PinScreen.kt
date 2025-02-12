@@ -22,6 +22,7 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -38,21 +39,29 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import com.myapp.spendless.R
+import com.myapp.spendless.model.User
+import com.myapp.spendless.presentation.viewmodels.UserViewmodel
 import com.myapp.spendless.ui.theme.Primary
 import com.myapp.spendless.ui.theme.PrimaryFixed
-import kotlinx.coroutines.delay
 
 @Composable
-fun PinScreen(navController: NavController) {
+fun PinScreen(navController: NavController, viewmodel: UserViewmodel) {
 
-    var pinCode by remember { mutableStateOf<String>("") }
+    val state by viewmodel.state.collectAsStateWithLifecycle()
+
+    var pinCodeList by remember { mutableStateOf<List<String>>(emptyList()) }
     var confirmPinCode by remember { mutableStateOf<String>("") }
     var isPinComplete by remember { mutableStateOf(false) }
 
     val context = LocalContext.current
+
+    val pinCode = pinCodeList.joinToString("")
     val pinLength = 5
 
     Column(
@@ -89,6 +98,8 @@ fun PinScreen(navController: NavController) {
 
         Spacer(modifier = Modifier.height(20.dp))
 
+        Text(text = state.user.name)
+        Log.d("TAG", "the name is ${state.user.name}")
         Text(
             text = if (pinCode.length < pinLength) "Create PIN" else "Repeat your PIN",
             fontSize = 28.sp,
@@ -152,7 +163,9 @@ fun PinScreen(navController: NavController) {
                     Row {
                         if (!isPinComplete) {
                             numbers.forEach { number ->
-                                PinNumber(number = number) { pinCode += number }
+                                PinNumber(number = number) {
+                                    pinCodeList = pinCodeList + number
+                                }
                             }
                         } else {
                             numbers.forEach { number ->
@@ -169,10 +182,10 @@ fun PinScreen(navController: NavController) {
                 horizontalArrangement = Arrangement.End
             ) {
                 if (!isPinComplete) {
-                    PinNumber("0") { pinCode += "0" }
+                    PinNumber("0") { pinCodeList = pinCodeList + "0" }
                     PinDelete() {
                         if (pinCode.isNotEmpty()) {
-                            pinCode = pinCode.dropLast(1)
+                            pinCodeList = pinCodeList.dropLast(1)
                         }
                     }
                 } else {
@@ -196,6 +209,9 @@ fun PinScreen(navController: NavController) {
             Log.d("TAG", confirmPinCode)
             ButtomError("PINs don’t match. Try again")
         } else {
+            viewmodel.getPin(pinCode)
+            Log.d("TAG", pinCode)
+            viewmodel.insertUser()
             navController.navigate("LoginScreen")
         }
     }
@@ -250,14 +266,13 @@ fun PinDelete(onDelete: () -> Unit) {
     }
 }
 
-
 @Preview(showBackground = true)
 @Composable
 fun PinScreenPreview() {
     val navController = rememberNavController()
-    PinScreen(navController)
+    val viewmodel: UserViewmodel = hiltViewModel()
+    PinScreen(navController, viewmodel = viewmodel)
 }
-
 
 @Preview(showBackground = true)
 @Composable
