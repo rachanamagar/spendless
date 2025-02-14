@@ -1,5 +1,6 @@
 package com.myapp.spendless.presentation.viewmodels
 
+import androidx.compose.runtime.Composable
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.myapp.spendless.model.UserRepository
@@ -7,6 +8,7 @@ import com.myapp.spendless.presentation.component.UserState
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -38,14 +40,13 @@ class UserViewmodel @Inject constructor(private val repository: UserRepository) 
             repository.insertUser(newUser)
         }
     }
-    fun existingUser(username: String){
-        val user =_uiState.value.user
-      /*  viewModelScope.launch {
-            val list = repository.getAllUser()
-            val user = list.first().any{it.name == username}
 
-            if (user)
 
-        }*/
+    fun validateUser(name: String, pin: String, onResult: (Boolean)-> Unit){
+        viewModelScope.launch {
+            val isValid = repository.isUserValid(name, pin)
+            onResult(isValid)
+
+        }
     }
 }

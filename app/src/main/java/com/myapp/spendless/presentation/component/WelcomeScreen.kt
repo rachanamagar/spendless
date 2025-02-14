@@ -1,6 +1,7 @@
 package com.myapp.spendless.presentation.component
 
 import android.util.Log
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxHeight
@@ -44,7 +45,7 @@ import com.myapp.spendless.ui.theme.BackgroundBlack
 import com.myapp.spendless.ui.theme.Primary
 
 @Composable
-fun WelcomeScreen(viewmodel: UserViewmodel = hiltViewModel(), onNextClicked: () -> Unit) {
+fun WelcomeScreen(viewmodel: UserViewmodel = hiltViewModel(), onNextClicked: () -> Unit, onLogin :()-> Unit) {
 
     val focusManager = LocalFocusManager.current
     val focusRequester = remember { FocusRequester() }
@@ -169,7 +170,7 @@ fun WelcomeScreen(viewmodel: UserViewmodel = hiltViewModel(), onNextClicked: () 
             color = Primary,
             fontFamily = FontFamily(Font(R.font.fig_tee_bold)),
             fontSize = 14.sp,
-            modifier = Modifier.padding(8.dp)
+            modifier = Modifier.padding(8.dp).clickable { onLogin() }
         )
     }
 }
@@ -179,5 +180,5 @@ fun WelcomeScreen(viewmodel: UserViewmodel = hiltViewModel(), onNextClicked: () 
 @Composable
 fun WelcomeScreenPreview() {
     val viewmodel: UserViewmodel = hiltViewModel()
-    WelcomeScreen(viewmodel){}
+    WelcomeScreen(viewmodel, {}){}
 }

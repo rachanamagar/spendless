@@ -6,5 +6,7 @@ interface UserRepository {
 
     suspend fun insertUser(user: User)
     suspend fun getAllUser(): Flow<Set<User>>
-    suspend fun getUserById(id: Int): User
+    suspend fun getUserByName(userName: String): User?
+    suspend fun isUserValid(userName: String, pin: String): Boolean
+
 }

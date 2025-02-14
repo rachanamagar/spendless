@@ -17,6 +17,7 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import com.myapp.spendless.model.User
+import com.myapp.spendless.presentation.component.HomeScreen
 import com.myapp.spendless.presentation.component.LoginScreen
 import com.myapp.spendless.presentation.component.PinLoginScreen
 import com.myapp.spendless.presentation.component.PinScreen
@@ -48,7 +49,10 @@ class MainActivity : ComponentActivity() {
                     ) {
 
                         composable("WelcomeScreen") {
-                            WelcomeScreen(viewmodel = viewmodel) { navController.navigate("PinScreen") }
+                            WelcomeScreen(
+                                viewmodel = viewmodel,
+                                { navController.navigate("PinScreen") },
+                                { navController.navigate("LoginScreen") })
                         }
 
                         composable("PinScreen") {
@@ -68,6 +72,18 @@ class MainActivity : ComponentActivity() {
                             if (name != null) {
                                 PinLoginScreen(name, navController)
                             }
+                        }
+
+                        composable(
+                            "HomeScreen/{name}",
+                            arguments = listOf(
+                                navArgument("name") { type = NavType.StringType })
+                        ) { backStackEntry ->
+                            val name = backStackEntry.arguments?.getString("name")
+                            if (name != null) {
+                                HomeScreen(name)
+                            }
+
                         }
 
                     }
