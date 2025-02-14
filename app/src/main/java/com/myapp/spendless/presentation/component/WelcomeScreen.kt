@@ -19,9 +19,14 @@ import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.SideEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -43,14 +48,22 @@ import com.myapp.spendless.R
 import com.myapp.spendless.presentation.viewmodels.UserViewmodel
 import com.myapp.spendless.ui.theme.BackgroundBlack
 import com.myapp.spendless.ui.theme.Primary
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 
 @Composable
-fun WelcomeScreen(viewmodel: UserViewmodel = hiltViewModel(), onNextClicked: () -> Unit, onLogin :()-> Unit) {
+fun WelcomeScreen(
+    viewmodel: UserViewmodel = hiltViewModel(),
+    onNextClicked: () -> Unit,
+    onLogin: () -> Unit
+) {
 
     val focusManager = LocalFocusManager.current
     val focusRequester = remember { FocusRequester() }
 
     val state by viewmodel.state.collectAsState()
+
+    val coroutineScope = rememberCoroutineScope()
 
 
     Column(
@@ -87,10 +100,14 @@ fun WelcomeScreen(viewmodel: UserViewmodel = hiltViewModel(), onNextClicked: () 
                 Font(R.font.fig_tree_loight)
             )
         )
+
         OutlinedTextField(
             value = state.user.name,
             onValueChange = { newText ->
                 viewmodel.getUsername(newText)
+                coroutineScope.launch  {
+                    viewmodel.isExistingUser(newText)
+                }
             },
             colors = OutlinedTextFieldDefaults.colors(
                 unfocusedContainerColor = BackgroundBlack.copy(alpha = 0.1f),
@@ -141,7 +158,9 @@ fun WelcomeScreen(viewmodel: UserViewmodel = hiltViewModel(), onNextClicked: () 
                 Log.d("TAG", state.user.name)
             },
             colors = ButtonDefaults.buttonColors(
-                containerColor = if(state.user.name.isNotEmpty()) Primary else  BackgroundBlack.copy (alpha = 0.2f)
+                containerColor = if (state.user.name.isNotEmpty()) Primary else BackgroundBlack.copy(
+                    alpha = 0.2f
+                )
             ),
             modifier = Modifier
                 .fillMaxWidth()
@@ -150,7 +169,7 @@ fun WelcomeScreen(viewmodel: UserViewmodel = hiltViewModel(), onNextClicked: () 
         ) {
             Text(
                 text = "Next",
-                color = if(state.user.name.isNotEmpty()) Color.White else Color.Gray,
+                color = if (state.user.name.isNotEmpty()) Color.White else Color.Gray,
                 fontSize = 14.sp,
                 modifier = Modifier.padding(8.dp)
             )
@@ -170,8 +189,14 @@ fun WelcomeScreen(viewmodel: UserViewmodel = hiltViewModel(), onNextClicked: () 
             color = Primary,
             fontFamily = FontFamily(Font(R.font.fig_tee_bold)),
             fontSize = 14.sp,
-            modifier = Modifier.padding(8.dp).clickable { onLogin() }
+            modifier = Modifier
+                .padding(8.dp)
+                .clickable { onLogin() }
         )
+
+        if (state.isExistingUser){
+            ButtomError("The username has been taken.")
+        }
     }
 }
 
@@ -180,5 +205,5 @@ fun WelcomeScreen(viewmodel: UserViewmodel = hiltViewModel(), onNextClicked: () 
 @Composable
 fun WelcomeScreenPreview() {
     val viewmodel: UserViewmodel = hiltViewModel()
-    WelcomeScreen(viewmodel, {}){}
+    WelcomeScreen(viewmodel, {}) {}
 }

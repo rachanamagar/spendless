@@ -28,7 +28,7 @@ fun ButtomError(message: String) {
 
     Box(
         modifier = Modifier
-            .fillMaxSize(),
+            .fillMaxSize().padding(vertical = 30.dp),
         contentAlignment = Alignment.BottomCenter
     ) {
         Column(

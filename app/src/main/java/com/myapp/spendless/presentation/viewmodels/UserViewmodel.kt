@@ -49,4 +49,15 @@ class UserViewmodel @Inject constructor(private val repository: UserRepository) 
 
         }
     }
+
+    suspend fun isExistingUser(name: String): Boolean{
+        val result = repository.getAllUser()
+            .first()
+            .any { it.name == name }
+
+        _uiState.value = _uiState.value.copy(
+            isExistingUser =  result
+        )
+        return result
+    }
 }
