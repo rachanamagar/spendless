@@ -1,5 +1,6 @@
 package com.myapp.spendless.presentation.component
 
+import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -18,9 +19,11 @@ import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -31,19 +34,26 @@ import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.myapp.spendless.R
+import com.myapp.spendless.presentation.viewmodels.UserViewmodel
 import com.myapp.spendless.ui.theme.Primary
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 
 @Composable
 fun PinLoginScreen(name: String, navController: NavController) {
 
     var pinCode by remember { mutableStateOf<String>("") }
-    var checkPinCode by remember { mutableStateOf(false) }
     var isPinComplete by remember { mutableStateOf(false) }
 
+    val viewmodel: UserViewmodel = hiltViewModel()
+
+    var userValid by remember { mutableStateOf<Boolean?>(null) }
 
     val context = LocalContext.current
+    val coroutineScope = rememberCoroutineScope()
     val pinLength = 5
 
     Column(
@@ -150,7 +160,29 @@ fun PinLoginScreen(name: String, navController: NavController) {
         }
     }
     if (pinCode.length == pinLength) {
+        Log.d("TAG", pinCode.length.toString())
         isPinComplete = true
 
+        Log.d("TAG", isPinComplete.toString())
+    }
+
+    if (isPinComplete){
+       viewmodel.validateUser(name, pinCode){
+           if (it){
+               userValid = true
+               navController.navigate("HomeScreen/$name")
+           }
+           else{
+               userValid = false
+           }
+        }
+        if (userValid== false){
+            ButtomError("Wrong Pin")
+            LaunchedEffect(Unit) {
+                delay(1000)
+                pinCode = ""
+                isPinComplete = false
+            }
+        }
     }
 }

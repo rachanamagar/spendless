@@ -19,8 +19,12 @@ class UserRepositoryImpl @Inject constructor(private val dao: SpendLessDao): Use
        }
     }
 
-    override suspend fun getUserById(id: Int): User {
-       return dao.getUserById(id).toUserModel()
+    override suspend fun getUserByName(userName: String): User? {
+        return dao.getUserByName(userName)?.toUserModel()
     }
 
+    override suspend fun isUserValid(userName: String, pin: String): Boolean {
+       val user = dao.getUserByName(userName)
+        return user?.pin == pin
+    }
 }

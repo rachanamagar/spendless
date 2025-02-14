@@ -14,6 +14,6 @@ interface SpendLessDao {
     @Query("SELECT * FROM user")
     fun getAllUser(): Flow<List<UserEntity>>
 
-    @Query("SELECT * from user WHERE id = :id")
-    suspend fun getUserById(id: Int): UserEntity
+    @Query("SELECT * from user WHERE name = :name")
+    suspend fun getUserByName(name: String): UserEntity?
 }
