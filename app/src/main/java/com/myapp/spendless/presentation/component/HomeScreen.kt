@@ -12,6 +12,8 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
@@ -23,6 +25,9 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -32,9 +37,11 @@ import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.hilt.navigation.compose.hiltViewModel
 import com.myapp.spendless.R
+import com.myapp.spendless.model.Transaction
+import com.myapp.spendless.presentation.viewmodels.TransactionViewModel
 import com.myapp.spendless.ui.theme.Primary
-import com.myapp.spendless.ui.theme.PrimaryContainer
 import com.myapp.spendless.ui.theme.PrimaryFixed
 import com.myapp.spendless.ui.theme.SecondaryContainer
 import com.myapp.spendless.ui.theme.SecondaryFixed
@@ -42,7 +49,16 @@ import com.myapp.spendless.ui.theme.SurfaceBackground
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun HomeScreen(getName: String) {
+fun HomeScreen(getName: String, onCLicked: () -> Unit) {
+
+    val viewModel: TransactionViewModel = hiltViewModel()
+    val state by viewModel.uiState.collectAsState()
+
+    val list = state.transactionList
+
+    LaunchedEffect(Unit) {
+        viewModel.getAllTransaction()
+    }
 
     Scaffold(
         topBar = {
@@ -62,7 +78,7 @@ fun HomeScreen(getName: String) {
         },
         floatingActionButton = {
             FloatingActionButton(
-                onClick = {},
+                onClick = { onCLicked() },
                 containerColor = SecondaryContainer
             ) {
                 Icon(imageVector = Icons.Filled.Add, contentDescription = "Add transaction")
@@ -163,13 +179,15 @@ fun HomeScreen(getName: String) {
                     }
                 }
             }
-            ButtomRow()
+            ButtomRow(
+                list = list
+            )
         }
     }
 }
 
 @Composable
-fun ButtomRow() {
+fun ButtomRow(list: List<Transaction>) {
     Box(
         modifier = Modifier
             .fillMaxWidth()
@@ -186,17 +204,28 @@ fun ButtomRow() {
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
 
-            Icon(
-                painter = painterResource(R.drawable.icon),
-                contentDescription = null,
-                tint = Color.Unspecified
-            )
-            Text(
-                "No transactions to show",
-                fontSize = 18.sp,
-                color = Color.Black,
-                fontFamily = FontFamily(Font(R.font.fig_tree_medium)),
-            )
+            if (list.isEmpty()) {
+                Icon(
+                    painter = painterResource(R.drawable.icon),
+                    contentDescription = null,
+                    tint = Color.Unspecified
+                )
+
+                Text(
+                    "No transactions to show",
+                    fontSize = 18.sp,
+                    color = Color.Black,
+                    fontFamily = FontFamily(Font(R.font.fig_tree_medium)),
+                )
+            } else {
+                LazyColumn(
+                    modifier = Modifier.fillMaxSize()
+                ) {
+                    items(list) { transaction ->
+                        TransactionListItem(transaction)
+                    }
+                }
+            }
         }
     }
 }
@@ -205,11 +234,30 @@ fun ButtomRow() {
 @Preview(showBackground = true)
 @Composable
 fun ButtomRowPreview() {
-    ButtomRow()
+    val cat = listOf(
+        Transaction(
+            id = 1,
+            title = "Decoration",
+            amount = "2000.0".toDouble(),
+            note = "Home decoration expenses",
+            icon = R.drawable.home,
+            category = "Home"
+        ), Transaction(
+            id = 1,
+            title = "Decoration",
+            amount = "2000.0".toDouble(),
+            note = "Home decoration expenses",
+            icon = R.drawable.home,
+            category = "Home"
+        )
+    )
+    ButtomRow(
+        list = cat
+    )
 }
 
 @Preview(showBackground = true)
 @Composable
 fun HomeScreenPreview() {
-    HomeScreen("user1")
+    HomeScreen("user1") {}
 }

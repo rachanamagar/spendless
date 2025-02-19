@@ -1,7 +1,5 @@
 package com.myapp.spendless.model
 
-
-
 data class User(
     val id: Int,
     val name: String,
@@ -11,5 +9,8 @@ data class User(
         return this.name.uppercase()
     }
 }
+
+
+
 
 

@@ -19,9 +19,11 @@ import androidx.navigation.navArgument
 import com.myapp.spendless.model.User
 import com.myapp.spendless.presentation.component.HomeScreen
 import com.myapp.spendless.presentation.component.LoginScreen
+import com.myapp.spendless.presentation.component.NewTransaction
 import com.myapp.spendless.presentation.component.PinLoginScreen
 import com.myapp.spendless.presentation.component.PinScreen
 import com.myapp.spendless.presentation.component.WelcomeScreen
+import com.myapp.spendless.presentation.viewmodels.TransactionViewModel
 import com.myapp.spendless.presentation.viewmodels.UserViewmodel
 import com.myapp.spendless.ui.theme.SpendlessTheme
 import com.myapp.spendless.ui.theme.SurfaceBackground
@@ -81,9 +83,19 @@ class MainActivity : ComponentActivity() {
                         ) { backStackEntry ->
                             val name = backStackEntry.arguments?.getString("name")
                             if (name != null) {
-                                HomeScreen(name)
+                                HomeScreen(name){
+                                    navController.navigate("newTransactionScreen")
+                                }
                             }
+                        }
 
+                        composable("newTransactionScreen"){
+                            val viewModel: TransactionViewModel = hiltViewModel()
+                            NewTransaction(){
+                                viewModel.insertTransaction()
+                                navController.popBackStack()
+
+                            }
                         }
 
                     }

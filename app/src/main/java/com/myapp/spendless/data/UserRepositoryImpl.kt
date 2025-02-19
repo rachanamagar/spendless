@@ -7,7 +7,6 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 import javax.inject.Inject
 
-
 class UserRepositoryImpl @Inject constructor(private val dao: SpendLessDao): UserRepository {
     override suspend fun insertUser(user: User) {
         dao.insert(user.toEntity())
