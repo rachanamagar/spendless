@@ -8,7 +8,8 @@ data class Transaction(
     val amount: Double,
     val note: String,
     val category: String,
-    val icon: Int
+    val icon: Int,
+    val date: Long
 )
 
 data class Categories(

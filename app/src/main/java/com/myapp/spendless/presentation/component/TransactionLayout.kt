@@ -4,8 +4,6 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.fillMaxHeight
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -21,10 +19,11 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.myapp.spendless.R
+import com.myapp.spendless.model.Transaction
 import com.myapp.spendless.ui.theme.PrimaryFixed
 
 @Composable
-fun TransactionLayout(){
+fun TransactionLayout(transaction: Transaction){
 
     Column(modifier = Modifier
         .height(72.dp)
@@ -34,13 +33,13 @@ fun TransactionLayout(){
         horizontalAlignment = Alignment.CenterHorizontally) {
         Row(modifier = Modifier.fillMaxWidth().padding(horizontal = 10.dp),
             horizontalArrangement = Arrangement.SpaceBetween) {
-            Text(text = "Groceries",
+            Text(text = transaction.title,
                 fontSize = 16.sp,
                 color = Color.Black,
                 fontFamily = FontFamily(Font(R.font.fig_tree_medium)),
             )
 
-            Text(text = "$60.25",
+            Text(text = transaction.amount.toString(),
                 fontSize = 16.sp,
                 color = Color.Black,
                 fontFamily = FontFamily(Font(R.font.fig_tree_medium)),
@@ -67,5 +66,13 @@ fun TransactionLayout(){
 @Preview(showBackground = true)
 @Composable
 fun TransactionPreviewPreview() {
-    TransactionLayout()
+    TransactionLayout(Transaction(
+        id = 9197,
+        title = "habitasse",
+        amount = 2.3,
+        note = "verterem",
+        category = "tractatos",
+        icon = 7256,
+        date = 1
+    ))
 }

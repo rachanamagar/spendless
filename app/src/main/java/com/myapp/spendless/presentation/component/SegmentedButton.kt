@@ -10,10 +10,6 @@ import androidx.compose.material3.SegmentedButtonDefaults
 import androidx.compose.material3.SingleChoiceSegmentedButtonRow
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableIntStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
@@ -22,8 +18,7 @@ import com.myapp.spendless.R
 
 
 @Composable
-fun SegmentedButton(modifier: Modifier = Modifier) {
-    var selectedIndex by remember { mutableIntStateOf(0) }
+fun SegmentedButton(selectedIndex: Int, modifier: Modifier = Modifier, onSelectedIndex: (Int)-> Unit) {
     val options = listOf(
         "Expenses" to R.drawable.down,
         "Income" to R.drawable.up
@@ -36,7 +31,7 @@ fun SegmentedButton(modifier: Modifier = Modifier) {
                     index = index,
                     count = options.size
                 ),
-                onClick = { selectedIndex = index },
+                onClick = { onSelectedIndex(index) },
                 selected = index == selectedIndex,
                 label = {
                     Row(verticalAlignment = Alignment.CenterVertically) {

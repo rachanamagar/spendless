@@ -83,18 +83,21 @@ class MainActivity : ComponentActivity() {
                         ) { backStackEntry ->
                             val name = backStackEntry.arguments?.getString("name")
                             if (name != null) {
-                                HomeScreen(name){
+                                HomeScreen(name) {
                                     navController.navigate("newTransactionScreen")
                                 }
                             }
                         }
 
-                        composable("newTransactionScreen"){
+                        composable("newTransactionScreen") {
                             val viewModel: TransactionViewModel = hiltViewModel()
-                            NewTransaction(){
-                                viewModel.insertTransaction()
+                            NewTransaction(
+                                onCreateClicked = {
+                                    viewModel.insertTransaction()
+                                    navController.popBackStack()
+                                }
+                            ) {
                                 navController.popBackStack()
-
                             }
                         }
 

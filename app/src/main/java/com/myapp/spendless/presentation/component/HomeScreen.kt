@@ -108,7 +108,7 @@ fun HomeScreen(getName: String, onCLicked: () -> Unit) {
                     horizontalAlignment = Alignment.CenterHorizontally
                 ) {
                     Text(
-                        "$10,000.45", fontSize = 45.sp,
+                        formatAmount(state.totalAmount).toDollar(), fontSize = 45.sp,
                         color = Color.White,
                         fontFamily = FontFamily(Font(R.font.fig_tree_medium)),
                     )
@@ -132,14 +132,9 @@ fun HomeScreen(getName: String, onCLicked: () -> Unit) {
                         .width(240.dp)
 
                 ) {
-                    Column(
-                        modifier = Modifier
-                            .fillMaxSize()
-                            .background(PrimaryFixed, shape = RoundedCornerShape(16.dp))
-                            .padding(16.dp),
-                        verticalArrangement = Arrangement.Center,
-                        horizontalAlignment = Alignment.CenterHorizontally
-                    ) {
+                    if (state.transactionList.isNotEmpty()) {
+                        state.maxTransaction?.let { TransactionLayout(it) }
+                    } else {
                         Text(
                             "Your Largest transaction will appear here",
                             fontSize = 12.sp,
@@ -165,7 +160,8 @@ fun HomeScreen(getName: String, onCLicked: () -> Unit) {
                     ) {
 
                         Text(
-                            "$0",
+                            text = if(state.transactionList.isNotEmpty()) state.lastWeek.toString().toExpensesUnit(
+                                Color.Black).toString() else "0.0",
                             fontSize = 18.sp,
                             color = Color.Black,
                             fontFamily = FontFamily(Font(R.font.fig_tree_medium)),
@@ -241,14 +237,16 @@ fun ButtomRowPreview() {
             amount = "2000.0".toDouble(),
             note = "Home decoration expenses",
             icon = R.drawable.home,
-            category = "Home"
+            category = "Home",
+            date = 1
         ), Transaction(
             id = 1,
             title = "Decoration",
             amount = "2000.0".toDouble(),
             note = "Home decoration expenses",
             icon = R.drawable.home,
-            category = "Home"
+            category = "Home",
+            date = 1
         )
     )
     ButtomRow(

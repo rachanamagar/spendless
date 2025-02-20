@@ -11,5 +11,6 @@ data class TransactionEntity(
     val amount: Double,
     val note: String,
     val category: String,
-    val icon: Int
+    val icon: Int,
+    val date: Long
 )

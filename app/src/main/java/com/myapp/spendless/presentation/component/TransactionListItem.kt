@@ -19,16 +19,23 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.AnnotatedString
+import androidx.compose.ui.text.SpanStyle
+import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
+import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.myapp.spendless.R
-import com.myapp.spendless.model.Categories
 import com.myapp.spendless.model.Transaction
+import com.myapp.spendless.ui.theme.Error
 import com.myapp.spendless.ui.theme.PrimaryContainer
+import com.myapp.spendless.ui.theme.PrimaryFixed
+import com.myapp.spendless.ui.theme.Success
 import com.myapp.spendless.ui.theme.SurfaceBackground
+import java.text.DecimalFormat
 
 @Composable
 fun TransactionListItem(transaction: Transaction) {
@@ -46,7 +53,7 @@ fun TransactionListItem(transaction: Transaction) {
             Box(
                 modifier = Modifier
                     .weight(1f)
-                    .background(PrimaryContainer, RoundedCornerShape(12.dp))
+                    .background(PrimaryFixed, RoundedCornerShape(12.dp))
                     .width(44.dp)
                     .height(44.dp)
                     .aspectRatio(1f),
@@ -67,21 +74,52 @@ fun TransactionListItem(transaction: Transaction) {
                 Text(text = transaction.category, fontSize = 12.sp, color = Color.Gray)
             }
             Spacer(modifier = Modifier.width(8.dp))
+
+            val amountText = if(transaction.category == "Income"){
+                transaction.amount.toString().toIncomeUnit()
+            }else{
+                transaction.amount.toString().toExpensesUnit(Error)
+            }
             Text(
-                text = transaction.amount.toString().toDollarUnit(),
+                text = amountText,
                 fontSize = 18.sp,
                 fontFamily = FontFamily(Font(R.font.fig_tree_medium)),
                 modifier = Modifier
                     .padding(4.dp)
-                    .weight(2f)
+                    //.weight(2f)
             )
 
         }
     }
 }
 
-fun String.toDollarUnit(): String {
+fun String.toIncomeUnit(): AnnotatedString {
+    return buildAnnotatedString {
+        withStyle(style = SpanStyle(color = Success)){
+            append("$")
+        }
+        append(this@toIncomeUnit)
+    }
+}
+
+
+fun String.toExpensesUnit(color: Color): AnnotatedString {
+    return buildAnnotatedString {
+        withStyle(style = SpanStyle(color = color)){
+            append(" -$")
+        }
+        append(this@toExpensesUnit)
+    }
+}
+
+fun String.toDollar(): String{
     return "$ $this"
+}
+
+fun formatAmount(amount: Double): String{
+    val formatted = DecimalFormat("#,###.00")
+    return formatted.format(amount)
+
 }
 
 
@@ -94,7 +132,8 @@ fun ListItemPreview() {
         amount = "2000.0".toDouble(),
         note = "Home decoration expenses",
         icon = R.drawable.home,
-        category = "Home"
+        category = "Home",
+        date = 1
     )
     TransactionListItem(cat)
 }
