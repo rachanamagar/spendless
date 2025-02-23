@@ -14,6 +14,7 @@ val SurfaceBackground = Color(0xFFF6F3F3)
 val Primary = Color(0xFF5A00C8)
 val PrimaryContainer = Color(0xFF8138FF)
 val PrimaryFixed = Color(0xFFEADDFF)
+val PrimaryText = Color(0xFF24005A)
 
 val Secondary = Color(0xFF5F6200)
 val SecondaryContainer = Color(0xFFD2E750)

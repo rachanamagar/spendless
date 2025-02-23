@@ -5,8 +5,8 @@ import com.myapp.spendless.model.User
 import com.myapp.spendless.model.UserRepository
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
+import java.util.UUID
 import javax.inject.Inject
-
 
 class UserRepositoryImpl @Inject constructor(private val dao: SpendLessDao): UserRepository {
     override suspend fun insertUser(user: User) {
@@ -26,5 +26,10 @@ class UserRepositoryImpl @Inject constructor(private val dao: SpendLessDao): Use
     override suspend fun isUserValid(userName: String, pin: String): Boolean {
        val user = dao.getUserByName(userName)
         return user?.pin == pin
+    }
+
+    override suspend fun getUserIDIfValid(username: String, pin: String): UUID? {
+        val user = dao.getUserByName(username)
+        return user?.takeIf { it.pin == pin }?.id
     }
 }

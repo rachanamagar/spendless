@@ -4,8 +4,12 @@ import android.content.Context
 import androidx.room.Room
 import com.myapp.spendless.data.LocalData.SpendLessDao
 import com.myapp.spendless.data.LocalData.SpendLessDatabase
+import com.myapp.spendless.data.LocalData.TransactionDao
+import com.myapp.spendless.data.LocalData.TransactionRepoImpl
 import com.myapp.spendless.data.UserRepositoryImpl
+import com.myapp.spendless.model.TransactionRepository
 import com.myapp.spendless.model.UserRepository
+import com.myapp.spendless.util.DataStoreManager
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -36,7 +40,23 @@ object AppModule {
 
     @Singleton
     @Provides
+    fun provideTransactionDao(db: SpendLessDatabase) = db.getTransactionDao()
+
+    @Singleton
+    @Provides
     fun providesRepository(dao: SpendLessDao): UserRepository {
         return UserRepositoryImpl(dao)
+    }
+
+    @Singleton
+    @Provides
+    fun providesTransactionRepository(daoTransaction: TransactionDao): TransactionRepository {
+        return TransactionRepoImpl(daoTransaction)
+    }
+
+    @Provides
+    @Singleton
+    fun provideDataStoreManager(@ApplicationContext context: Context): DataStoreManager {
+        return DataStoreManager(context)
     }
 }
