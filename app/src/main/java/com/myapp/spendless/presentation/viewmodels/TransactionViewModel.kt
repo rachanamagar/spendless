@@ -10,6 +10,7 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.flow.map
@@ -26,10 +27,14 @@ class TransactionViewModel @Inject constructor(
     private val _uiState = MutableStateFlow(TransactionState())
     val uiState: StateFlow<TransactionState> = _uiState
 
+    private val _popularCategory = MutableStateFlow<String?>(null)
+    val popularCategory = _popularCategory.asStateFlow()
+
     init {
         getAllTransaction()
         totalBalance()
         showLargestAmount()
+        showFamousCategory()
     }
 
     fun handleEvent(event: TransactionEvent) {
@@ -109,7 +114,7 @@ class TransactionViewModel @Inject constructor(
         }
     }
 
-    fun totalBalance() {
+    private fun totalBalance() {
         viewModelScope.launch {
             val userID = sessionManager.getUserSession().firstOrNull() ?: return@launch
             repository.getTransaction(userID).map { transaction ->
@@ -123,8 +128,25 @@ class TransactionViewModel @Inject constructor(
                 }
         }
     }
+    private fun showFamousCategory() {
+        viewModelScope.launch {
+            val userId = sessionManager.getUserSession().firstOrNull() ?: return@launch
+            repository.getTransaction(userId).collect { transactions ->
+                val mostFrequentCategory = transactions
+                    .groupingBy { it.category }
+                    .eachCount()
 
-    fun showLargestAmount(){
+                val maxCount = mostFrequentCategory.values.maxOrNull()
+                val popularCount = mostFrequentCategory
+                    .filterValues { it == maxCount }
+                    .keys
+
+                _popularCategory.value = if (popularCount.size == 1) popularCount.first() else null
+            }
+        }
+    }
+
+    private fun showLargestAmount(){
         viewModelScope.launch {
             val userID = sessionManager.getUserSession().firstOrNull() ?: return@launch
             repository.getTransaction(userID).collect { transactionList ->

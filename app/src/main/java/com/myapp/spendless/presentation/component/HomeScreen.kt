@@ -30,6 +30,9 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -54,11 +57,13 @@ import java.util.UUID
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun HomeScreen(getName: String, onSetting:()-> Unit, onCLicked: () -> Unit) {
+fun HomeScreen(getName: String, onSetting: () -> Unit, onCLicked: () -> Unit) {
 
     val viewModel: TransactionViewModel = hiltViewModel()
     val state by viewModel.uiState.collectAsState()
 
+    val popular by viewModel.popularCategory.collectAsState()
+    var isPopularCategoryVisible by remember { mutableStateOf(popular) }
     val list = state.transactionList
 
     LaunchedEffect(Unit) {
@@ -70,7 +75,9 @@ fun HomeScreen(getName: String, onSetting:()-> Unit, onCLicked: () -> Unit) {
             TopAppBar(
                 title = {
                     Row(
-                        modifier = Modifier.fillMaxWidth().padding(horizontal = 20.dp),
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(horizontal = 20.dp),
                         horizontalArrangement = Arrangement.SpaceBetween
                     ) {
                         Text(
@@ -86,14 +93,17 @@ fun HomeScreen(getName: String, onSetting:()-> Unit, onCLicked: () -> Unit) {
                                 .width(30.dp)
                                 .clip(RoundedCornerShape(6.dp))
                                 .background(PrimaryFixed.copy(alpha = 0.5f))
-                                .clickable { onSetting() }
-                                ,
+                                .clickable { onSetting() },
                             contentAlignment = Alignment.Center
                         ) {
-                            Icon(painter = painterResource(R.drawable.setting),
+                            Icon(
+                                painter = painterResource(R.drawable.setting),
                                 contentDescription = null,
                                 tint = Color.White,
-                                modifier = Modifier.size(20.dp).padding(2.dp))
+                                modifier = Modifier
+                                    .size(20.dp)
+                                    .padding(2.dp)
+                            )
                         }
                     }
 
@@ -149,6 +159,54 @@ fun HomeScreen(getName: String, onSetting:()-> Unit, onCLicked: () -> Unit) {
                     )
                 }
             }
+            if (isPopularCategoryVisible != null) {
+                Box(
+                    modifier = Modifier
+                        .padding(horizontal = 20.dp, vertical = 10.dp)
+                        .height(70.dp)
+                        .fillMaxWidth()
+                        .background(PrimaryFixed.copy(alpha = 0.2f), RoundedCornerShape(16.dp))
+                ) {
+                    Row(
+                        modifier = Modifier.padding(10.dp),
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Box(
+                            modifier = Modifier
+                                .height(50.dp)
+                                .width(50.dp)
+                                .background(SurfaceBackground, RoundedCornerShape(10.dp)),
+                            contentAlignment = Alignment.Center
+                        ) {
+                            Icon(
+                                painter = painterResource(R.drawable.icon),
+                                tint = Color.Unspecified,
+                                modifier = Modifier.size(26.dp),
+                                contentDescription = null
+                            )
+                        }
+                        Spacer(modifier = Modifier.width(14.dp))
+                        Column {
+                            popular.let {
+                                if (it != null) {
+                                    Text(
+                                        text = it,
+                                        fontFamily = FontFamily(Font(R.font.fig_tree_regular)),
+                                        fontSize = 18.sp,
+                                        color = Color.White
+                                    )
+                                }
+                            }
+                            Text(
+                                "Most popular Category",
+                                fontFamily = FontFamily(Font(R.font.fig_tree_regular)),
+                                fontSize = 12.sp,
+                                color = Color.Gray
+                            )
+                        }
+                    }
+                }
+            }
 
             Row(
                 modifier = Modifier
@@ -163,8 +221,9 @@ fun HomeScreen(getName: String, onSetting:()-> Unit, onCLicked: () -> Unit) {
                         .background(PrimaryFixed, RoundedCornerShape(16.dp))
                 ) {
                     Column(
-                        modifier = Modifier.fillMaxWidth(),
-                        horizontalAlignment = Alignment.CenterHorizontally
+                        modifier = Modifier.fillMaxWidth().padding(10.dp),
+                        horizontalAlignment = Alignment.CenterHorizontally,
+                        verticalArrangement = Arrangement.Center
                     ) {
                         if (state.transactionList.isNotEmpty()) {
                             state.maxTransaction?.let { TransactionLayout(it) }
