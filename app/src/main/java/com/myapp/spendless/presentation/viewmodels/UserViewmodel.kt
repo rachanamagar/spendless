@@ -1,10 +1,11 @@
 package com.myapp.spendless.presentation.viewmodels
 
-import androidx.compose.runtime.Composable
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.myapp.spendless.model.UserRepository
 import com.myapp.spendless.presentation.component.UserState
+import com.myapp.spendless.util.DataStoreManager
+import com.myapp.spendless.util.SessionManager
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -13,7 +14,10 @@ import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
-class UserViewmodel @Inject constructor(private val repository: UserRepository) : ViewModel() {
+class UserViewmodel @Inject constructor(
+    private val repository: UserRepository,
+    private val sessionManager: SessionManager
+) : ViewModel() {
 
     private val _uiState = MutableStateFlow(UserState())
     val state: StateFlow<UserState> = _uiState
@@ -42,22 +46,32 @@ class UserViewmodel @Inject constructor(private val repository: UserRepository) 
     }
 
 
-    fun validateUser(name: String, pin: String, onResult: (Boolean)-> Unit){
+    fun validateUser(name: String, pin: String, onResult: (Boolean) -> Unit) {
         viewModelScope.launch {
-            val isValid = repository.isUserValid(name, pin)
-            onResult(isValid)
-
+            val user = repository.getUserByName(name)
+            if (user != null && user.pin == pin) {
+                sessionManager.saveUserSession(user.id)
+                onResult(true)
+            } else {
+                onResult(false)
+            }
         }
     }
 
-    suspend fun isExistingUser(name: String): Boolean{
+    suspend fun isExistingUser(name: String): Boolean {
         val result = repository.getAllUser()
             .first()
             .any { it.name == name }
 
         _uiState.value = _uiState.value.copy(
-            isExistingUser =  result
+            isExistingUser = result
         )
         return result
+    }
+
+    fun logOutUser(){
+        viewModelScope.launch {
+            sessionManager.clearUserSession()
+        }
     }
 }

@@ -1,8 +1,10 @@
 package com.myapp.spendless.model
 
 import com.myapp.spendless.R
+import java.util.UUID
 
 data class Transaction(
+    val userId : UUID,
     val id: Int,
     val title: String,
     val amount: Double,

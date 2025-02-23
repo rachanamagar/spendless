@@ -2,18 +2,16 @@ package com.myapp.spendless.presentation.viewmodels
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.myapp.spendless.model.Transaction
 import com.myapp.spendless.model.TransactionRepository
 import com.myapp.spendless.presentation.component.TransactionEvent
 import com.myapp.spendless.presentation.component.TransactionState
+import com.myapp.spendless.util.SessionManager
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.catch
-import kotlinx.coroutines.flow.collect
-import kotlinx.coroutines.flow.filter
-import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
@@ -21,7 +19,8 @@ import javax.inject.Inject
 
 @HiltViewModel
 class TransactionViewModel @Inject constructor(
-    private val repository: TransactionRepository
+    private val repository: TransactionRepository,
+    private val sessionManager: SessionManager
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow(TransactionState())
@@ -84,7 +83,6 @@ class TransactionViewModel @Inject constructor(
     }
 
     fun insertTransaction() {
-
         val date = System.currentTimeMillis()
         _uiState.value = _uiState.value.copy(
            transaction = _uiState.value.transaction.copy(
@@ -93,13 +91,15 @@ class TransactionViewModel @Inject constructor(
         )
         val transaction = _uiState.value.transaction
         viewModelScope.launch {
-            repository.insertTransaction(transaction)
+            val userID = sessionManager.getUserSession().firstOrNull() ?: return@launch
+            repository.insertTransaction(transaction, userID)
         }
     }
 
     fun getAllTransaction() {
         viewModelScope.launch(Dispatchers.IO) {
-            repository.getTransaction()
+            val userID = sessionManager.getUserSession().firstOrNull() ?: return@launch
+            repository.getTransaction(userID)
                 .catch { e -> println(e.localizedMessage ?: "An error occured.") }
                 .collect { list ->
                     _uiState.value = _uiState.value.copy(
@@ -111,7 +111,8 @@ class TransactionViewModel @Inject constructor(
 
     fun totalBalance() {
         viewModelScope.launch {
-            repository.getTransaction().map { transaction ->
+            val userID = sessionManager.getUserSession().firstOrNull() ?: return@launch
+            repository.getTransaction(userID).map { transaction ->
                 transaction.sumOf {
                     if (it.category == "Income") it.amount else -it.amount
                 }
@@ -125,7 +126,8 @@ class TransactionViewModel @Inject constructor(
 
     fun showLargestAmount(){
         viewModelScope.launch {
-            repository.getTransaction().collect { transactionList ->
+            val userID = sessionManager.getUserSession().firstOrNull() ?: return@launch
+            repository.getTransaction(userID).collect { transactionList ->
                 val filteredTransaction = transactionList.filter { it.category != "Income" }
                 val largestTransaction = filteredTransaction.maxByOrNull { it.amount }
 
@@ -142,6 +144,16 @@ class TransactionViewModel @Inject constructor(
 
                 )
             }
+        }
+    }
+
+    fun changeFormat(amount: String){
+        val cleanedAmount = amount.replace(Regex("[^\\d.]"), "")
+        val amountAsDouble = cleanedAmount.toDoubleOrNull() ?: 0.0
+        viewModelScope.launch {
+            _uiState.value = _uiState.value.copy(
+                totalAmount = amountAsDouble
+            )
         }
     }
 

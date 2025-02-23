@@ -9,6 +9,7 @@ import com.myapp.spendless.data.LocalData.TransactionRepoImpl
 import com.myapp.spendless.data.UserRepositoryImpl
 import com.myapp.spendless.model.TransactionRepository
 import com.myapp.spendless.model.UserRepository
+import com.myapp.spendless.util.DataStoreManager
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -51,5 +52,11 @@ object AppModule {
     @Provides
     fun providesTransactionRepository(daoTransaction: TransactionDao): TransactionRepository {
         return TransactionRepoImpl(daoTransaction)
+    }
+
+    @Provides
+    @Singleton
+    fun provideDataStoreManager(@ApplicationContext context: Context): DataStoreManager {
+        return DataStoreManager(context)
     }
 }

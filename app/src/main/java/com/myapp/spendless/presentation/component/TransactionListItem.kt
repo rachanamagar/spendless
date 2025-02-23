@@ -31,11 +31,13 @@ import androidx.compose.ui.unit.sp
 import com.myapp.spendless.R
 import com.myapp.spendless.model.Transaction
 import com.myapp.spendless.ui.theme.Error
-import com.myapp.spendless.ui.theme.PrimaryContainer
 import com.myapp.spendless.ui.theme.PrimaryFixed
 import com.myapp.spendless.ui.theme.Success
 import com.myapp.spendless.ui.theme.SurfaceBackground
 import java.text.DecimalFormat
+import java.text.DecimalFormatSymbols
+import java.util.Locale
+import java.util.UUID
 
 @Composable
 fun TransactionListItem(transaction: Transaction) {
@@ -112,14 +114,46 @@ fun String.toExpensesUnit(color: Color): AnnotatedString {
     }
 }
 
+fun String.toFormatUnit(): AnnotatedString {
+    return buildAnnotatedString {
+        withStyle(style = SpanStyle()){
+            append(" -($ $this )")
+        }
+        append(this@toFormatUnit)
+    }
+}
+
 fun String.toDollar(): String{
     return "$ $this"
 }
 
-fun formatAmount(amount: Double): String{
-    val formatted = DecimalFormat("#,###.00")
+fun formatAmountToFormatUnit(amount: Double): String {
+    return "($amount)"
+}
+fun formatAmount(amount: Double): String {
+    val formatted = DecimalFormat("#,###.##", DecimalFormatSymbols(Locale.US))
     return formatted.format(amount)
+}
 
+fun formatThousFormat(amount: Double): String {
+    val formatted = DecimalFormat("#.###", DecimalFormatSymbols(Locale.GERMANY))
+    return formatted.format(amount)
+}
+
+fun formatDecimalCommaFormat(amount: Double): String {
+    val symbols = DecimalFormatSymbols(Locale.GERMANY)
+    symbols.groupingSeparator = '.'
+    symbols.decimalSeparator = ','
+
+    val formatted = DecimalFormat("#,###.##", symbols)
+    return formatted.format(amount)
+}
+
+fun formatThousandSpaceFormat(amount: Double): String {
+    val symbols = DecimalFormatSymbols(Locale.FRANCE)
+    symbols.groupingSeparator = ' '
+    val formatted = DecimalFormat("#,###.##", symbols)
+    return formatted.format(amount)
 }
 
 
@@ -133,7 +167,8 @@ fun ListItemPreview() {
         note = "Home decoration expenses",
         icon = R.drawable.home,
         category = "Home",
-        date = 1
+        date = 1,
+        userId = UUID.randomUUID()
     )
     TransactionListItem(cat)
 }

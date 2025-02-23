@@ -1,6 +1,7 @@
 package com.myapp.spendless
 
 import android.os.Bundle
+import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
@@ -8,6 +9,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -23,6 +25,9 @@ import com.myapp.spendless.presentation.component.NewTransaction
 import com.myapp.spendless.presentation.component.PinLoginScreen
 import com.myapp.spendless.presentation.component.PinScreen
 import com.myapp.spendless.presentation.component.WelcomeScreen
+import com.myapp.spendless.presentation.component.setting.PreferenceScreen
+import com.myapp.spendless.presentation.component.setting.SecurityScreen
+import com.myapp.spendless.presentation.component.setting.SettingScreen
 import com.myapp.spendless.presentation.viewmodels.TransactionViewModel
 import com.myapp.spendless.presentation.viewmodels.UserViewmodel
 import com.myapp.spendless.ui.theme.SpendlessTheme
@@ -44,6 +49,8 @@ class MainActivity : ComponentActivity() {
 
                     val navController = rememberNavController()
                     val viewmodel: UserViewmodel = hiltViewModel()
+                    val viewModelTransaction: TransactionViewModel = hiltViewModel()
+                    val state = viewModelTransaction.uiState.collectAsState()
 
                     NavHost(
                         navController = navController,
@@ -83,7 +90,7 @@ class MainActivity : ComponentActivity() {
                         ) { backStackEntry ->
                             val name = backStackEntry.arguments?.getString("name")
                             if (name != null) {
-                                HomeScreen(name) {
+                                HomeScreen(name, { navController.navigate("settings") }) {
                                     navController.navigate("newTransactionScreen")
                                 }
                             }
@@ -99,6 +106,26 @@ class MainActivity : ComponentActivity() {
                             ) {
                                 navController.popBackStack()
                             }
+                        }
+
+                        composable("settings") {
+                            SettingScreen({
+                                navController.navigate("security")
+                            },
+                                { navController.navigate("preferences") }
+                            ) {
+                                viewmodel.logOutUser()
+                                navController.navigate("LoginScreen")
+                            }
+                        }
+
+                        composable("security") {
+                            SecurityScreen({ navController.popBackStack() })
+                        }
+
+                        composable("preferences") {
+                            PreferenceScreen(state = state.value,
+                                { navController.popBackStack() })
                         }
 
                     }

@@ -29,7 +29,8 @@ fun TransactionEntity.toTransactionModel(): Transaction{
         amount = amount,
         category = category,
         icon = icon,
-        date = date
+        date = date,
+        userId = userId
     )
 }
 
@@ -41,6 +42,7 @@ fun Transaction.toTransEntity(): TransactionEntity{
         amount = amount,
         category = category,
         icon = icon,
-        date = date
+        date = date,
+        userId = userId
     )
 }
