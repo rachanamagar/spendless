@@ -1,4 +1,4 @@
-package com.myapp.spendless.presentation.component.setting
+package com.myapp.spendless.presentation.setting
 
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column

@@ -1,4 +1,4 @@
-package com.myapp.spendless.presentation.component.setting
+package com.myapp.spendless.presentation.setting
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.fillMaxWidth

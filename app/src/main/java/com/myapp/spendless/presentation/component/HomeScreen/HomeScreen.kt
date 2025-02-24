@@ -1,4 +1,4 @@
-package com.myapp.spendless.presentation.component
+package com.myapp.spendless.presentation.component.HomeScreen
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -46,9 +46,13 @@ import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.myapp.spendless.R
 import com.myapp.spendless.model.Transaction
+import com.myapp.spendless.presentation.component.TransactionLayout
+import com.myapp.spendless.presentation.component.TransactionListItem
+import com.myapp.spendless.presentation.setting.formatAmount
+import com.myapp.spendless.presentation.setting.toDollar
+import com.myapp.spendless.presentation.setting.toExpensesUnit
 import com.myapp.spendless.presentation.viewmodels.TransactionViewModel
 import com.myapp.spendless.ui.theme.Primary
-import com.myapp.spendless.ui.theme.PrimaryContainer
 import com.myapp.spendless.ui.theme.PrimaryFixed
 import com.myapp.spendless.ui.theme.SecondaryContainer
 import com.myapp.spendless.ui.theme.SecondaryFixed
@@ -147,7 +151,7 @@ fun HomeScreen(getName: String, onSetting: () -> Unit, onCLicked: () -> Unit) {
 
                     ) {
                     Text(
-                        formatAmount(state.totalAmount).toDollar(), fontSize = 45.sp,
+                        formatAmount(state.totalAmount.toString()).toDollar(), fontSize = 45.sp,
                         color = Color.White,
                         fontFamily = FontFamily(Font(R.font.fig_tree_medium)),
                     )
@@ -160,52 +164,7 @@ fun HomeScreen(getName: String, onSetting: () -> Unit, onCLicked: () -> Unit) {
                 }
             }
             if (isPopularCategoryVisible != null) {
-                Box(
-                    modifier = Modifier
-                        .padding(horizontal = 20.dp, vertical = 10.dp)
-                        .height(70.dp)
-                        .fillMaxWidth()
-                        .background(PrimaryFixed.copy(alpha = 0.2f), RoundedCornerShape(16.dp))
-                ) {
-                    Row(
-                        modifier = Modifier.padding(10.dp),
-                        verticalAlignment = Alignment.CenterVertically
-                    ) {
-                        Box(
-                            modifier = Modifier
-                                .height(50.dp)
-                                .width(50.dp)
-                                .background(SurfaceBackground, RoundedCornerShape(10.dp)),
-                            contentAlignment = Alignment.Center
-                        ) {
-                            Icon(
-                                painter = painterResource(R.drawable.icon),
-                                tint = Color.Unspecified,
-                                modifier = Modifier.size(26.dp),
-                                contentDescription = null
-                            )
-                        }
-                        Spacer(modifier = Modifier.width(14.dp))
-                        Column {
-                            popular.let {
-                                if (it != null) {
-                                    Text(
-                                        text = it,
-                                        fontFamily = FontFamily(Font(R.font.fig_tree_regular)),
-                                        fontSize = 18.sp,
-                                        color = Color.White
-                                    )
-                                }
-                            }
-                            Text(
-                                "Most popular Category",
-                                fontFamily = FontFamily(Font(R.font.fig_tree_regular)),
-                                fontSize = 12.sp,
-                                color = Color.Gray
-                            )
-                        }
-                    }
-                }
+                HighestTransactionSection(popular)
             }
 
             Row(

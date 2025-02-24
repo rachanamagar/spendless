@@ -3,8 +3,7 @@ package com.myapp.spendless.presentation.viewmodels
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.myapp.spendless.model.UserRepository
-import com.myapp.spendless.presentation.component.UserState
-import com.myapp.spendless.util.DataStoreManager
+import com.myapp.spendless.presentation.state.UserState
 import com.myapp.spendless.util.SessionManager
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow

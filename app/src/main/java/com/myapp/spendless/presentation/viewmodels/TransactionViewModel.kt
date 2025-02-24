@@ -4,7 +4,12 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.myapp.spendless.model.TransactionRepository
 import com.myapp.spendless.presentation.component.TransactionEvent
-import com.myapp.spendless.presentation.component.TransactionState
+import com.myapp.spendless.presentation.setting.preference.model.AmountFormat
+import com.myapp.spendless.presentation.setting.preference.model.DecimalSeparator
+import com.myapp.spendless.presentation.setting.preference.model.PriceDisplayConfig
+import com.myapp.spendless.presentation.setting.preference.model.ThousandSeparator
+import com.myapp.spendless.presentation.state.TransactionState
+import com.myapp.spendless.util.DataStoreManager
 import com.myapp.spendless.util.SessionManager
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
@@ -21,7 +26,8 @@ import javax.inject.Inject
 @HiltViewModel
 class TransactionViewModel @Inject constructor(
     private val repository: TransactionRepository,
-    private val sessionManager: SessionManager
+    private val sessionManager: SessionManager,
+    private val dataStoreManager: DataStoreManager
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow(TransactionState())
@@ -90,9 +96,9 @@ class TransactionViewModel @Inject constructor(
     fun insertTransaction() {
         val date = System.currentTimeMillis()
         _uiState.value = _uiState.value.copy(
-           transaction = _uiState.value.transaction.copy(
-               date = date
-           )
+            transaction = _uiState.value.transaction.copy(
+                date = date
+            )
         )
         val transaction = _uiState.value.transaction
         viewModelScope.launch {
@@ -123,11 +129,14 @@ class TransactionViewModel @Inject constructor(
                 }
             }
                 .collect { total ->
-                    _uiState.update { it.copy(totalAmount = total)
+                    _uiState.update {
+                        it.copy(totalAmount = total)
                     }
+                    dataStoreManager.saveTotalAmount(total)
                 }
         }
     }
+
     private fun showFamousCategory() {
         viewModelScope.launch {
             val userId = sessionManager.getUserSession().firstOrNull() ?: return@launch
@@ -146,7 +155,7 @@ class TransactionViewModel @Inject constructor(
         }
     }
 
-    private fun showLargestAmount(){
+    private fun showLargestAmount() {
         viewModelScope.launch {
             val userID = sessionManager.getUserSession().firstOrNull() ?: return@launch
             repository.getTransaction(userID).collect { transactionList ->
@@ -156,7 +165,7 @@ class TransactionViewModel @Inject constructor(
                 val currentTime = System.currentTimeMillis()
                 val lastWeekTransaction = filteredTransaction.filter {
                     val tranDate = it.date
-                    val lastSevenDaysTransaction = currentTime - (7*24*60*60*1000)
+                    val lastSevenDaysTransaction = currentTime - (7 * 24 * 60 * 60 * 1000)
                     tranDate >= lastSevenDaysTransaction
                 }
                 val lastTransaction = lastWeekTransaction.sumOf { it.amount }
@@ -169,7 +178,7 @@ class TransactionViewModel @Inject constructor(
         }
     }
 
-    fun changeFormat(amount: String){
+    fun changeFormat(amount: String) {
         val cleanedAmount = amount.replace(Regex("[^\\d.]"), "")
         val amountAsDouble = cleanedAmount.toDoubleOrNull() ?: 0.0
         viewModelScope.launch {
@@ -178,5 +187,4 @@ class TransactionViewModel @Inject constructor(
             )
         }
     }
-
 }

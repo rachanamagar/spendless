@@ -2,6 +2,7 @@ package com.myapp.spendless.util
 
 import android.content.Context
 import androidx.datastore.dataStore
+import androidx.datastore.preferences.core.doublePreferencesKey
 import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.stringPreferencesKey
 import androidx.datastore.preferences.preferencesDataStore
@@ -14,8 +15,9 @@ val Context.dataStore by preferencesDataStore(name = "user_prefs")
 
 class DataStoreManager(private val context: Context) {
 
-    companion object{
+    companion object {
         private val USER_ID = stringPreferencesKey("user_id")
+        private val TOTAL_AMOUNT = doublePreferencesKey("total_amount")
     }
 
     suspend fun saveUserId(userId: UUID) {
@@ -30,11 +32,23 @@ class DataStoreManager(private val context: Context) {
         }
     }
 
+    suspend fun saveTotalAmount(amount: Double) {
+        context.dataStore.edit { preferences ->
+            preferences[TOTAL_AMOUNT] = amount
+        }
+    }
+
+    fun getTotalAmount(): Flow<Double?> {
+        return context.dataStore.data.map { preferences ->
+            preferences[TOTAL_AMOUNT]
+        }
+    }
+
     val userIdFlow: Flow<UUID?> = context.dataStore.data.map { preferences ->
         preferences[USER_ID]?.let { UUID.fromString(it) }
     }
 
-    suspend fun clearUserId(){
+    suspend fun clearUserId() {
         context.dataStore.edit { it.clear() }
     }
 }

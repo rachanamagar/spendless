@@ -1,4 +1,4 @@
-package com.myapp.spendless.presentation.component
+package com.myapp.spendless.presentation.LoginScreen
 
 import android.util.Log
 import androidx.compose.foundation.clickable
