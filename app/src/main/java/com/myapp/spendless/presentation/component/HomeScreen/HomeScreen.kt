@@ -44,11 +44,14 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.myapp.spendless.R
 import com.myapp.spendless.model.Transaction
 import com.myapp.spendless.presentation.component.TransactionLayout
 import com.myapp.spendless.presentation.component.TransactionListItem
 import com.myapp.spendless.presentation.setting.formatAmount
+import com.myapp.spendless.presentation.setting.formatTotalAmount
+import com.myapp.spendless.presentation.setting.preference.viewModel.PreferencesViewModel
 import com.myapp.spendless.presentation.setting.toDollar
 import com.myapp.spendless.presentation.setting.toExpensesUnit
 import com.myapp.spendless.presentation.viewmodels.TransactionViewModel
@@ -69,6 +72,9 @@ fun HomeScreen(getName: String, onSetting: () -> Unit, onCLicked: () -> Unit) {
     val popular by viewModel.popularCategory.collectAsState()
     var isPopularCategoryVisible by remember { mutableStateOf(popular) }
     val list = state.transactionList
+
+    val preferencesViewModel: PreferencesViewModel = hiltViewModel()
+    val uiPreferences by  preferencesViewModel.uiPreferenceState.collectAsStateWithLifecycle()
 
     LaunchedEffect(Unit) {
         viewModel.getAllTransaction()
@@ -149,7 +155,10 @@ fun HomeScreen(getName: String, onSetting: () -> Unit, onCLicked: () -> Unit) {
 
                     ) {
                     Text(
-                        formatAmount(state.totalAmount.toString()).toDollar(), fontSize = 45.sp,
+                       formatTotalAmount(
+                           state.totalAmount.toString(),
+                           priceDisplayConfig = uiPreferences.priceDisplayConfig ,
+                       ).toDollar(), fontSize = 45.sp,
                         color = Color.White,
                         fontFamily = FontFamily(Font(R.font.fig_tree_medium)),
                     )

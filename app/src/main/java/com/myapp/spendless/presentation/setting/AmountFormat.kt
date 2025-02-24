@@ -5,6 +5,10 @@ import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.withStyle
+import com.myapp.spendless.presentation.setting.preference.model.AmountFormat
+import com.myapp.spendless.presentation.setting.preference.model.DecimalSeparator
+import com.myapp.spendless.presentation.setting.preference.model.PriceDisplayConfig
+import com.myapp.spendless.presentation.setting.preference.model.ThousandSeparator
 import com.myapp.spendless.ui.theme.Success
 import java.text.DecimalFormat
 import java.text.DecimalFormatSymbols
@@ -151,4 +155,24 @@ fun String.addCommaToThousands(): String {
 
     val formattedNumber = DecimalFormat("#,###").format(number)
     return formattedNumber
+}
+
+fun formatTotalAmount(amount: String, priceDisplayConfig: PriceDisplayConfig): String {
+    var formattedAmount = amount
+    formattedAmount = if (priceDisplayConfig.amountFormat is AmountFormat.WithBrackets) {
+        formattedAmount.wrapWithBrackets()
+    } else {
+        formattedAmount.unwrapBrackets()
+    }
+    formattedAmount = if (priceDisplayConfig.decimalSeparator is DecimalSeparator.Comma) {
+        formattedAmount.replaceDecimalDotWithComma()
+    } else {
+        formattedAmount.replaceDecimalCommaWithDot()
+    }
+    formattedAmount = when (priceDisplayConfig.thousandSeparator) {
+        is ThousandSeparator.Comma -> formattedAmount.replaceThousandSpaceOrDotWithComma()
+        is ThousandSeparator.Dot -> formattedAmount.replaceThousandCommaOrSpaceWithDot()
+        is ThousandSeparator.Space -> formattedAmount.replaceThousandCommaWithSpace()
+    }
+    return formattedAmount
 }

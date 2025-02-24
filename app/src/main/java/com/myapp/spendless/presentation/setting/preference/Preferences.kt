@@ -45,10 +45,9 @@ import com.myapp.spendless.presentation.viewmodels.TransactionViewModel
 fun SpendlessPreferenceScreen(onBackPressed: () -> Unit) {
 
     val viewModel: PreferencesViewModel = hiltViewModel()
-    val navController = rememberNavController()
-
     val uiState by viewModel.uiPreferenceState.collectAsStateWithLifecycle()
     var expanded by remember { mutableStateOf(false) }
+    var symbol by remember { mutableStateOf("$") }
     var selectedCurrency by remember { mutableStateOf("$ US Dollar (USD)") }
     Scaffold(
         topBar = {
@@ -73,79 +72,13 @@ fun SpendlessPreferenceScreen(onBackPressed: () -> Unit) {
             paddingValues,
             uiState,
             viewModel,
-            selectedCurrency,
-            expanded,
-            navController,
-            onSave = {  }
+            selectedCurrency = selectedCurrency,
+            onSelected = { selectedCurrency = it },
+            expanded = expanded,
+            onExpanded = { expanded = it },
+            onBack = { onBackPressed() },
+            symbol = symbol,
+            onSymbol = { symbol = it},
         )
-    }
-}
-
-@Composable
-fun ListOfCurrency(
-    selectedCurrency: String,
-    onCurrencyClicked: (String) -> Unit,
-    expanded: Boolean,
-    onSelect: () -> Unit,
-    toggledSelection: (Boolean) -> Unit
-) {
-
-    val currency = listOf(
-        "$ US Dollar (USD) ",
-        "€ Euro EUR",
-        "£ British Pound SterlingGBP",
-        "¥ Japanese Yen JPY",
-        "CHF Swiss Franc CHF",
-        "C$ Canadian Dollar CAD",
-        "A$ Australian Dollar AUD",
-        "¥  Chinese Yuan Renminbi CNY",
-        "₹  Indian Rupee INR",
-        "R  South African Rand ZAR"
-    )
-    Column(
-        modifier = Modifier
-            .fillMaxWidth()
-
-    ) {
-        Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .background(Color.White, RoundedCornerShape(16.dp))
-                .padding(20.dp)
-                .clickable { toggledSelection(expanded) },
-            horizontalArrangement = Arrangement.Start,
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            Text(
-                text = selectedCurrency,
-                modifier = Modifier
-                    .clickable { onSelect() }
-                    .weight(5f)
-            )
-
-            DropdownMenu(
-                expanded = expanded,
-                onDismissRequest = {},
-                modifier = Modifier
-                    .width(360.dp)
-                    .background(Color.White)
-                    .padding(10.dp),
-            ) {
-                currency.forEach { currency ->
-                    DropdownMenuItem(
-                        onClick = {
-                            onCurrencyClicked(currency)
-                            toggledSelection(expanded)
-                        },
-                        text = {
-                            Text(text = currency)
-                        })
-                }
-            }
-            Icon(
-                imageVector = Icons.Filled.ArrowDropDown,
-                contentDescription = null
-            )
-        }
     }
 }
