@@ -132,9 +132,7 @@ fun HomeScreen(getName: String, onSetting: () -> Unit, onCLicked: () -> Unit) {
                 .fillMaxSize()
                 .background(Primary)
                 .padding(paddingValues)
-            //.padding(20.dp)
         ) {
-
             Box(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -180,9 +178,8 @@ fun HomeScreen(getName: String, onSetting: () -> Unit, onCLicked: () -> Unit) {
                         .background(PrimaryFixed, RoundedCornerShape(16.dp))
                 ) {
                     Column(
-                        modifier = Modifier.fillMaxWidth().padding(10.dp),
+                        modifier = Modifier.fillMaxWidth().padding(5.dp),
                         horizontalAlignment = Alignment.CenterHorizontally,
-                        verticalArrangement = Arrangement.Center
                     ) {
                         if (state.transactionList.isNotEmpty()) {
                             state.maxTransaction?.let { TransactionLayout(it) }

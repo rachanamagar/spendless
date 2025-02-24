@@ -34,8 +34,7 @@ fun TransactionLayout(transaction: Transaction) {
         modifier = Modifier
             .height(72.dp)
             .background(PrimaryFixed, shape = RoundedCornerShape(16.dp))
-            .padding(16.dp),
-        verticalArrangement = Arrangement.Center,
+            .padding(10.dp),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         Row(
