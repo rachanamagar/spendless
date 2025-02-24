@@ -15,11 +15,11 @@ import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.navigation.NavHostController
 import com.myapp.spendless.R
 import com.myapp.spendless.presentation.component.AppButton
 import com.myapp.spendless.presentation.setting.preference.ui.DecimalFormatBox
 import com.myapp.spendless.presentation.setting.preference.ui.ExpenseAmountFormat
+import com.myapp.spendless.presentation.setting.preference.ui.ListOfCurrency
 import com.myapp.spendless.presentation.setting.preference.ui.ThousandSeperatorBox
 import com.myapp.spendless.presentation.setting.preference.ui.TotalAmountBox
 import com.myapp.spendless.presentation.setting.preference.viewModel.PreferencesScreenState
@@ -31,12 +31,14 @@ fun PreferenceUI(
     uiState: PreferencesScreenState,
     viewModel: PreferencesViewModel,
     selectedCurrency: String,
+    onSelected:(String)-> Unit,
     expanded: Boolean,
-    navController: NavHostController,
-    onSave:(String)-> Unit
+    symbol: String,
+    onSymbol:(String) -> Unit,
+    onExpanded:(Boolean)-> Unit,
+    onBack:()-> Unit
+
 ) {
-    var selectedCurrency1 = selectedCurrency
-    var expanded1 = expanded
 
     Column(
         modifier = Modifier
@@ -44,7 +46,7 @@ fun PreferenceUI(
             .padding(paddingValues)
             .padding(20.dp)
     ) {
-        TotalAmountBox(uiState.displayTotalAmount)
+        TotalAmountBox(uiState.displayTotalAmount, symbol)
         Spacer(modifier = Modifier.height(16.dp))
 
         ExpenseAmountFormat(){
@@ -59,11 +61,11 @@ fun PreferenceUI(
         )
         Spacer(modifier = Modifier.height(10.dp))
         ListOfCurrency(
-            selectedCurrency = selectedCurrency1,
-            { selectedCurrency1 = it },
-            expanded1,
-            { expanded1 = !expanded1 },
-            toggledSelection = { expanded1 = !expanded1 }
+            selectedCurrency = selectedCurrency,
+            onCurrencyClicked = onSelected,
+            onCurrencySymbol = onSymbol,
+            expanded = expanded,
+            toggledSelection = onExpanded,
         )
 
         Spacer(modifier = Modifier.height(20.dp))
@@ -77,10 +79,17 @@ fun PreferenceUI(
         AppButton(
             modifier = Modifier
                 .clickable {
-                    onSave(uiState.displayTotalAmount)
-                    navController.popBackStack()
-                    Log.d("TAG", "")
-                }, "Save"
+                    viewModel.updatePriceDisplayConfig(
+                        uiState.priceDisplayConfig.amountFormat,
+                        uiState.priceDisplayConfig.decimalSeparator,
+                        uiState.priceDisplayConfig.thousandSeparator
+                    )
+
+
+                    onBack()
+                    Log.d("Preferences", "Selected Price Display Config: ${uiState.priceDisplayConfig}")
+                },
+            "Save"
         )
 
     }

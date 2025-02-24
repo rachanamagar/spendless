@@ -5,6 +5,7 @@ import androidx.lifecycle.viewModelScope
 import com.myapp.spendless.presentation.setting.formatAmount
 import com.myapp.spendless.presentation.setting.preference.model.AmountFormat
 import com.myapp.spendless.presentation.setting.preference.model.DecimalSeparator
+import com.myapp.spendless.presentation.setting.preference.model.PriceDisplayConfig
 import com.myapp.spendless.presentation.setting.preference.model.ThousandSeparator
 import com.myapp.spendless.presentation.setting.replaceDecimalCommaWithDot
 import com.myapp.spendless.presentation.setting.replaceDecimalDotWithComma
@@ -26,7 +27,15 @@ class PreferencesViewModel @Inject constructor(
     private val dataStoreManager: DataStoreManager
 ) : ViewModel() {
 
-    private val _uiPreferenceState = MutableStateFlow(PreferencesScreenState())
+    private val _uiPreferenceState = MutableStateFlow(
+        PreferencesScreenState(
+            priceDisplayConfig = PriceDisplayConfig(
+                amountFormat = AmountFormat.WithoutBrackets,
+                decimalSeparator = DecimalSeparator.Comma,
+                thousandSeparator = ThousandSeparator.Comma
+            )
+        )
+    )
     val uiPreferenceState: StateFlow<PreferencesScreenState> = _uiPreferenceState
 
     init {
@@ -49,11 +58,13 @@ class PreferencesViewModel @Inject constructor(
             when (amountFormat) {
                 AmountFormat.WithBrackets -> _uiPreferenceState.value =
                     _uiPreferenceState.value.copy(
+                        priceDisplayConfig = _uiPreferenceState.value.priceDisplayConfig.copy(amountFormat = AmountFormat.WithBrackets),
                         displayTotalAmount = _uiPreferenceState.value.displayTotalAmount.wrapWithBrackets()
                     )
 
                 AmountFormat.WithoutBrackets -> _uiPreferenceState.value =
                     _uiPreferenceState.value.copy(
+                        priceDisplayConfig = _uiPreferenceState.value.priceDisplayConfig.copy(amountFormat = AmountFormat.WithoutBrackets),
                         displayTotalAmount = _uiPreferenceState.value.displayTotalAmount.unwrapBrackets()
                     )
             }
@@ -64,10 +75,12 @@ class PreferencesViewModel @Inject constructor(
         viewModelScope.launch {
             when (decimalSeparator) {
                 DecimalSeparator.Comma -> _uiPreferenceState.value = _uiPreferenceState.value.copy(
+                    priceDisplayConfig = _uiPreferenceState.value.priceDisplayConfig.copy(decimalSeparator = DecimalSeparator.Comma),
                     displayTotalAmount = _uiPreferenceState.value.displayTotalAmount.replaceDecimalDotWithComma()
                 )
 
                 DecimalSeparator.Dot -> _uiPreferenceState.value = _uiPreferenceState.value.copy(
+                    priceDisplayConfig = _uiPreferenceState.value.priceDisplayConfig.copy(decimalSeparator = DecimalSeparator.Dot),
                     displayTotalAmount = _uiPreferenceState.value.displayTotalAmount.replaceDecimalCommaWithDot()
                 )
             }
@@ -78,17 +91,35 @@ class PreferencesViewModel @Inject constructor(
         viewModelScope.launch {
             when (thousandSeparator) {
                 ThousandSeparator.Comma -> _uiPreferenceState.value = _uiPreferenceState.value.copy(
-                    displayTotalAmount =  _uiPreferenceState.value.displayTotalAmount.replaceThousandSpaceOrDotWithComma()
+                    priceDisplayConfig = _uiPreferenceState.value.priceDisplayConfig.copy(thousandSeparator = ThousandSeparator.Comma),
+                    displayTotalAmount = _uiPreferenceState.value.displayTotalAmount.replaceThousandSpaceOrDotWithComma()
                 )
 
                 ThousandSeparator.Dot -> _uiPreferenceState.value = _uiPreferenceState.value.copy(
-                    displayTotalAmount =  _uiPreferenceState.value.displayTotalAmount.replaceThousandCommaOrSpaceWithDot()
+                    priceDisplayConfig = _uiPreferenceState.value.priceDisplayConfig.copy(thousandSeparator = ThousandSeparator.Dot),
+                    displayTotalAmount = _uiPreferenceState.value.displayTotalAmount.replaceThousandCommaOrSpaceWithDot()
                 )
 
                 ThousandSeparator.Space -> _uiPreferenceState.value = _uiPreferenceState.value.copy(
+                    priceDisplayConfig = _uiPreferenceState.value.priceDisplayConfig.copy(thousandSeparator = ThousandSeparator.Space),
                     displayTotalAmount = _uiPreferenceState.value.displayTotalAmount.replaceThousandCommaWithSpace()
                 )
             }
         }
+    }
+
+    fun updatePriceDisplayConfig(
+        amountFormat: AmountFormat,
+        decimalSeparator: DecimalSeparator,
+        thousandSeparator: ThousandSeparator
+    ) {
+        val newState = _uiPreferenceState.value.copy(
+            priceDisplayConfig = PriceDisplayConfig(
+                amountFormat,
+                decimalSeparator,
+                thousandSeparator
+            )
+        )
+        _uiPreferenceState.value = newState
     }
 }
