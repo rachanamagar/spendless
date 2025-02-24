@@ -1,4 +1,4 @@
-package com.myapp.spendless.presentation.component
+package com.myapp.spendless.presentation.state
 
 import com.myapp.spendless.R
 import com.myapp.spendless.model.Transaction
@@ -15,8 +15,8 @@ data class TransactionState(
         date = 1,
         userId = UUID.randomUUID()
     ),
-    val transactionList:List<Transaction> =  emptyList(),
+    val transactionList: List<Transaction> = emptyList(),
     val totalAmount: Double = 0.0,
     val maxTransaction: Transaction? = null,
-    val lastWeek: Double = 0.0
+    val lastWeek: Double = 0.0,
 )

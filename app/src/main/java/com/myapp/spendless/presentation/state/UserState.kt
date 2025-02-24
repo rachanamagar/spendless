@@ -1,4 +1,4 @@
-package com.myapp.spendless.presentation.component
+package com.myapp.spendless.presentation.state
 
 import com.myapp.spendless.model.User
 import java.util.UUID

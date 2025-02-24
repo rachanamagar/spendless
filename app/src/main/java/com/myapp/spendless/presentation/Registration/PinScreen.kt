@@ -1,4 +1,4 @@
-package com.myapp.spendless.presentation.component
+package com.myapp.spendless.presentation.Registration
 
 import android.util.Log
 import androidx.compose.foundation.background
@@ -41,6 +41,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import com.myapp.spendless.R
+import com.myapp.spendless.presentation.component.ButtomError
 import com.myapp.spendless.presentation.viewmodels.UserViewmodel
 import com.myapp.spendless.ui.theme.Primary
 import com.myapp.spendless.ui.theme.PrimaryFixed

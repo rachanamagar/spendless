@@ -1,4 +1,4 @@
-package com.myapp.spendless.presentation.component
+package com.myapp.spendless.presentation.LoginScreen
 
 import android.util.Log
 import androidx.compose.foundation.background
@@ -37,10 +37,12 @@ import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.myapp.spendless.R
+import com.myapp.spendless.presentation.component.ButtomError
+import com.myapp.spendless.presentation.Registration.PinDelete
+import com.myapp.spendless.presentation.Registration.PinNumber
 import com.myapp.spendless.presentation.viewmodels.UserViewmodel
 import com.myapp.spendless.ui.theme.Primary
 import kotlinx.coroutines.delay
-import kotlinx.coroutines.launch
 
 @Composable
 fun PinLoginScreen(name: String, navController: NavController) {

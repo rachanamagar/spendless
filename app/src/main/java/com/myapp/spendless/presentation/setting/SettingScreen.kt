@@ -1,4 +1,4 @@
-package com.myapp.spendless.presentation.component.setting
+package com.myapp.spendless.presentation.setting
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -38,13 +38,13 @@ import com.myapp.spendless.ui.theme.PrimaryFixed
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun SettingScreen(onSecurityClicked:()-> Unit, onPreferencesClicked:()-> Unit, onLogOut:()-> Unit) {
+fun SettingScreen(onSecurityClicked:()-> Unit, onPreferencesClicked:()-> Unit, onBack:()-> Unit, onLogOut:()-> Unit) {
 
     Scaffold(
         topBar = {
             TopAppBar(
                 navigationIcon = {
-                    Icon(imageVector = Icons.Filled.ArrowBack, contentDescription = null)
+                    Icon(imageVector = Icons.Filled.ArrowBack, contentDescription = null, modifier = Modifier.clickable { onBack() })
                 },
                 title = {
                     Text(
@@ -167,5 +167,5 @@ fun SettingScreen(onSecurityClicked:()-> Unit, onPreferencesClicked:()-> Unit, o
 @Preview(showBackground = true)
 @Composable
 fun SettingScreenPreview() {
-    SettingScreen({}, {}){}
+    SettingScreen({}, {},{}){}
 }

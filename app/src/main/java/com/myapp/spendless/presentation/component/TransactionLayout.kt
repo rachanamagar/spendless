@@ -20,6 +20,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.myapp.spendless.R
 import com.myapp.spendless.model.Transaction
+import com.myapp.spendless.presentation.setting.toDollar
 import com.myapp.spendless.ui.theme.PrimaryFixed
 import java.text.SimpleDateFormat
 import java.util.Date

@@ -19,24 +19,18 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.text.AnnotatedString
-import androidx.compose.ui.text.SpanStyle
-import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
-import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.myapp.spendless.R
 import com.myapp.spendless.model.Transaction
+import com.myapp.spendless.presentation.setting.toExpensesUnit
+import com.myapp.spendless.presentation.setting.toIncomeUnit
 import com.myapp.spendless.ui.theme.Error
 import com.myapp.spendless.ui.theme.PrimaryFixed
-import com.myapp.spendless.ui.theme.Success
 import com.myapp.spendless.ui.theme.SurfaceBackground
-import java.text.DecimalFormat
-import java.text.DecimalFormatSymbols
-import java.util.Locale
 import java.util.UUID
 
 @Composable
@@ -94,68 +88,6 @@ fun TransactionListItem(transaction: Transaction) {
         }
     }
 }
-
-fun String.toIncomeUnit(): AnnotatedString {
-    return buildAnnotatedString {
-        withStyle(style = SpanStyle(color = Success)){
-            append("$")
-        }
-        append(this@toIncomeUnit)
-    }
-}
-
-
-fun String.toExpensesUnit(color: Color): AnnotatedString {
-    return buildAnnotatedString {
-        withStyle(style = SpanStyle(color = color)){
-            append(" -$")
-        }
-        append(this@toExpensesUnit)
-    }
-}
-
-fun String.toFormatUnit(): AnnotatedString {
-    return buildAnnotatedString {
-        withStyle(style = SpanStyle()){
-            append(" -($ $this )")
-        }
-        append(this@toFormatUnit)
-    }
-}
-
-fun String.toDollar(): String{
-    return "$ $this"
-}
-
-fun formatAmountToFormatUnit(amount: Double): String {
-    return "($amount)"
-}
-fun formatAmount(amount: Double): String {
-    val formatted = DecimalFormat("#,###.##", DecimalFormatSymbols(Locale.US))
-    return formatted.format(amount)
-}
-
-fun formatThousFormat(amount: Double): String {
-    val formatted = DecimalFormat("#.###", DecimalFormatSymbols(Locale.GERMANY))
-    return formatted.format(amount)
-}
-
-fun formatDecimalCommaFormat(amount: Double): String {
-    val symbols = DecimalFormatSymbols(Locale.GERMANY)
-    symbols.groupingSeparator = '.'
-    symbols.decimalSeparator = ','
-
-    val formatted = DecimalFormat("#,###.##", symbols)
-    return formatted.format(amount)
-}
-
-fun formatThousandSpaceFormat(amount: Double): String {
-    val symbols = DecimalFormatSymbols(Locale.FRANCE)
-    symbols.groupingSeparator = ' '
-    val formatted = DecimalFormat("#,###.##", symbols)
-    return formatted.format(amount)
-}
-
 
 @Preview(showBackground = true)
 @Composable

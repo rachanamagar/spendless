@@ -15,7 +15,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.KeyboardArrowDown
@@ -54,18 +53,17 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
-import androidx.lifecycle.viewmodel.compose.viewModel
 import com.myapp.spendless.R
 import com.myapp.spendless.model.Categories
 import com.myapp.spendless.model.categories
+import com.myapp.spendless.presentation.setting.toExpensesUnit
+import com.myapp.spendless.presentation.state.TransactionState
 import com.myapp.spendless.presentation.viewmodels.TransactionViewModel
 import com.myapp.spendless.ui.theme.Error
 import com.myapp.spendless.ui.theme.Primary
-import com.myapp.spendless.ui.theme.PrimaryContainer
 import com.myapp.spendless.ui.theme.PrimaryFixed
 import com.myapp.spendless.ui.theme.Success
 import com.myapp.spendless.ui.theme.SurfaceBackground
-import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
