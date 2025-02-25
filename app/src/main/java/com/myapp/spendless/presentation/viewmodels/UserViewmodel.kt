@@ -2,6 +2,7 @@ package com.myapp.spendless.presentation.viewmodels
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.myapp.spendless.model.User
 import com.myapp.spendless.model.UserRepository
 import com.myapp.spendless.presentation.state.UserState
 import com.myapp.spendless.util.SessionManager
@@ -36,7 +37,6 @@ class UserViewmodel @Inject constructor(
             )
         )
     }
-
     fun insertUser() {
         val newUser = _uiState.value.user
         viewModelScope.launch {
@@ -71,6 +71,18 @@ class UserViewmodel @Inject constructor(
     fun logOutUser(){
         viewModelScope.launch {
             sessionManager.clearUserSession()
+        }
+    }
+
+    fun saveUserName(userName: String){
+        viewModelScope.launch {
+            sessionManager.saveUserName(userName)
+        }
+    }
+
+    fun getUserName(){
+        viewModelScope.launch {
+            sessionManager.getUserName()
         }
     }
 }

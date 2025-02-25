@@ -17,6 +17,7 @@ class DataStoreManager(private val context: Context) {
 
     companion object {
         private val USER_ID = stringPreferencesKey("user_id")
+        private val USER_NAME = stringPreferencesKey("user_name")
         private val TOTAL_AMOUNT = doublePreferencesKey("total_amount")
     }
 
@@ -41,6 +42,18 @@ class DataStoreManager(private val context: Context) {
     fun getTotalAmount(): Flow<Double?> {
         return context.dataStore.data.map { preferences ->
             preferences[TOTAL_AMOUNT]
+        }
+    }
+
+    suspend fun saveUserName(name: String) {
+        context.dataStore.edit { preferences ->
+            preferences[USER_NAME] = name
+        }
+    }
+
+    fun getUserName(): Flow<String?> {
+        return context.dataStore.data.map { preferences ->
+            preferences[USER_NAME]
         }
     }
 

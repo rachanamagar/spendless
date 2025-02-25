@@ -8,15 +8,17 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
-import com.myapp.spendless.presentation.component.HomeScreen.HomeScreen
+import com.myapp.spendless.presentation.HomeScreen.HomeScreen
 import com.myapp.spendless.presentation.LoginScreen.LoginScreen
 import com.myapp.spendless.presentation.component.NewTransaction
 import com.myapp.spendless.presentation.LoginScreen.PinLoginScreen
@@ -46,6 +48,8 @@ class MainActivity : ComponentActivity() {
 
                     val navController = rememberNavController()
                     val viewmodel: UserViewmodel = hiltViewModel()
+                    val viewModelTransaction: TransactionViewModel = hiltViewModel()
+                    val state by viewModelTransaction.uiState.collectAsStateWithLifecycle()
 
                     NavHost(
                         navController = navController,
@@ -121,7 +125,10 @@ class MainActivity : ComponentActivity() {
 
                         composable("preferences") {
                             SpendlessPreferenceScreen(
-                                { navController.popBackStack() })
+                                onSave = {viewModelTransaction.changeSymbol(it)},
+                            )
+                                { navController.navigate("HomeScreen") }
+
                         }
 
                     }

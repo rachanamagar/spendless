@@ -10,6 +10,8 @@ data class UserState(
         pin = ""
     ),
     val isValidUser: Boolean = false,
-    val isExistingUser: Boolean = false
+    val isExistingUser: Boolean = false,
+    val pinCode: String = "",
+    val isUserIdentify: Boolean = false
 )
 

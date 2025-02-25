@@ -93,6 +93,12 @@ class TransactionViewModel @Inject constructor(
         )
     }
 
+    fun changeSymbol(symbol: String){
+        _uiState.value = _uiState.value.copy(
+            symbol =  symbol
+        )
+    }
+
     fun insertTransaction() {
         val date = System.currentTimeMillis()
         _uiState.value = _uiState.value.copy(
