@@ -19,4 +19,5 @@ data class TransactionState(
     val totalAmount: Double = 0.0,
     val maxTransaction: Transaction? = null,
     val lastWeek: Double = 0.0,
+    val symbol: String = "$"
 )

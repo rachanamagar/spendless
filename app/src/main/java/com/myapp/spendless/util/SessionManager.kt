@@ -19,4 +19,12 @@ class SessionManager @Inject constructor(
         dataStoreManager.clearUserId()
     }
 
+    suspend fun saveUserName(userName: String){
+        dataStoreManager.saveUserName(userName)
+    }
+
+    fun getUserName(): Flow<String?>{
+        return dataStoreManager.getUserName()
+    }
+
 }

@@ -1,4 +1,4 @@
-package com.myapp.spendless.presentation.component.HomeScreen
+package com.myapp.spendless.presentation.HomeScreen
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -74,7 +74,7 @@ fun HomeScreen(getName: String, onSetting: () -> Unit, onCLicked: () -> Unit) {
     val list = state.transactionList
 
     val preferencesViewModel: PreferencesViewModel = hiltViewModel()
-    val uiPreferences by  preferencesViewModel.uiPreferenceState.collectAsStateWithLifecycle()
+    val uiPreferences by preferencesViewModel.uiPreferenceState.collectAsStateWithLifecycle()
 
     LaunchedEffect(Unit) {
         viewModel.getAllTransaction()
@@ -154,14 +154,30 @@ fun HomeScreen(getName: String, onSetting: () -> Unit, onCLicked: () -> Unit) {
                     verticalArrangement = Arrangement.Center,
 
                     ) {
-                    Text(
-                       formatTotalAmount(
-                           state.totalAmount.toString(),
-                           priceDisplayConfig = uiPreferences.priceDisplayConfig ,
-                       ).toDollar(), fontSize = 45.sp,
-                        color = Color.White,
-                        fontFamily = FontFamily(Font(R.font.fig_tree_medium)),
-                    )
+
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.Center,
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+
+                        Text(
+                            text = state.symbol,
+                            fontFamily = FontFamily(Font(R.font.fig_tree_medium)),
+                            fontSize = 30.sp,
+                            color = Color.White
+                        )
+
+                        Text(
+                            formatTotalAmount(
+                                state.totalAmount.toString(),
+                                priceDisplayConfig = uiPreferences.priceDisplayConfig,
+                            ),
+                            fontSize = 45.sp,
+                            color = Color.White,
+                            fontFamily = FontFamily(Font(R.font.fig_tree_medium)),
+                        )
+                    }
                     Text(
                         "Account Balance",
                         fontSize = 14.sp,
@@ -187,7 +203,9 @@ fun HomeScreen(getName: String, onSetting: () -> Unit, onCLicked: () -> Unit) {
                         .background(PrimaryFixed, RoundedCornerShape(16.dp))
                 ) {
                     Column(
-                        modifier = Modifier.fillMaxWidth().padding(5.dp),
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(5.dp),
                         horizontalAlignment = Alignment.CenterHorizontally,
                     ) {
                         if (state.transactionList.isNotEmpty()) {
@@ -198,6 +216,7 @@ fun HomeScreen(getName: String, onSetting: () -> Unit, onCLicked: () -> Unit) {
                                 fontSize = 12.sp,
                                 color = Color.Black,
                                 fontFamily = FontFamily(Font(R.font.fig_tree_medium)),
+                                modifier = Modifier.padding(5.dp)
                             )
                         }
                     }

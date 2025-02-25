@@ -81,4 +81,10 @@ dependencies {
     implementation (libs.androidx.hilt.navigation.compose)
 
     implementation(libs.androidx.datastore.preferences)
+
+    androidTestImplementation (libs.androidx.junit.v115)
+    androidTestImplementation (libs.androidx.espresso.core.v351)
+    androidTestImplementation (libs.androidx.espresso.contrib)
+    androidTestImplementation (libs.ui.test.junit4)
+    debugImplementation (libs.ui.test.manifest)
 }

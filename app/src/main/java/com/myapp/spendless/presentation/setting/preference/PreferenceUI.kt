@@ -36,7 +36,8 @@ fun PreferenceUI(
     symbol: String,
     onSymbol:(String) -> Unit,
     onExpanded:(Boolean)-> Unit,
-    onBack:()-> Unit
+    onBack:()-> Unit,
+    onSave:(String) -> Unit
 
 ) {
 
@@ -84,8 +85,7 @@ fun PreferenceUI(
                         uiState.priceDisplayConfig.decimalSeparator,
                         uiState.priceDisplayConfig.thousandSeparator
                     )
-
-
+                    onSave(symbol)
                     onBack()
                     Log.d("Preferences", "Selected Price Display Config: ${uiState.priceDisplayConfig}")
                 },

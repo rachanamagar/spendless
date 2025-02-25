@@ -1,4 +1,4 @@
-package com.myapp.spendless.presentation.component.HomeScreen
+package com.myapp.spendless.presentation.HomeScreen
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box

@@ -42,7 +42,7 @@ import com.myapp.spendless.presentation.viewmodels.TransactionViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun SpendlessPreferenceScreen(onBackPressed: () -> Unit) {
+fun SpendlessPreferenceScreen(onSave:(String)-> Unit, onBackPressed: () -> Unit) {
 
     val viewModel: PreferencesViewModel = hiltViewModel()
     val uiState by viewModel.uiPreferenceState.collectAsStateWithLifecycle()
@@ -79,6 +79,7 @@ fun SpendlessPreferenceScreen(onBackPressed: () -> Unit) {
             onBack = { onBackPressed() },
             symbol = symbol,
             onSymbol = { symbol = it},
+            onSave = { onSave(symbol)}
         )
     }
 }
