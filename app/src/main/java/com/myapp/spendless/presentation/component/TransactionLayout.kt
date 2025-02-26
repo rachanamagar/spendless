@@ -45,14 +45,14 @@ fun TransactionLayout(transaction: Transaction) {
         ) {
             Text(
                 text = transaction.title,
-                fontSize = 16.sp,
+                fontSize = 20.sp,
                 color = Color.Black,
                 fontFamily = FontFamily(Font(R.font.fig_tree_medium)),
             )
 
             Text(
                 text = transaction.amount.toString().toDollar(),
-                fontSize = 16.sp,
+                fontSize = 20.sp,
                 color = Color.Black,
                 fontFamily = FontFamily(Font(R.font.fig_tree_medium)),
             )
