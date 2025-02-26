@@ -39,7 +39,7 @@ fun TransactionListItem(transaction: Transaction) {
     Column(
         modifier = Modifier
             .fillMaxWidth()
-            .background(SurfaceBackground, RoundedCornerShape(16.dp))
+            .background(Color.Transparent,RoundedCornerShape(16.dp))
     ) {
 
         Row(modifier = Modifier

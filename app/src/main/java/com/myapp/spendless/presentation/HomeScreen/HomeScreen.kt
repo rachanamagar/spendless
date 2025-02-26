@@ -40,6 +40,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
+import androidx.compose.ui.text.toUpperCase
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -47,8 +48,10 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.myapp.spendless.R
 import com.myapp.spendless.model.Transaction
+import com.myapp.spendless.presentation.HomeScreen.ui.TransactionList
 import com.myapp.spendless.presentation.component.TransactionLayout
 import com.myapp.spendless.presentation.component.TransactionListItem
+import com.myapp.spendless.presentation.component.toDateFormat
 import com.myapp.spendless.presentation.setting.formatAmount
 import com.myapp.spendless.presentation.setting.formatTotalAmount
 import com.myapp.spendless.presentation.setting.preference.viewModel.PreferencesViewModel
@@ -57,20 +60,25 @@ import com.myapp.spendless.presentation.setting.toExpensesUnit
 import com.myapp.spendless.presentation.viewmodels.TransactionViewModel
 import com.myapp.spendless.ui.theme.Primary
 import com.myapp.spendless.ui.theme.PrimaryFixed
+import com.myapp.spendless.ui.theme.PrimaryText
 import com.myapp.spendless.ui.theme.SecondaryContainer
 import com.myapp.spendless.ui.theme.SecondaryFixed
 import com.myapp.spendless.ui.theme.SurfaceBackground
+import java.time.Instant
+import java.time.LocalDate
+import java.time.ZoneId
+import java.time.format.DateTimeFormatter
+import java.util.Locale
 import java.util.UUID
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun HomeScreen(onSetting: () -> Unit, onCLicked: () -> Unit) {
+fun HomeScreen(onSetting: () -> Unit, onCLicked: () -> Unit, onShowAll: () -> Unit) {
 
     val viewModel: TransactionViewModel = hiltViewModel()
     val state by viewModel.uiState.collectAsState()
 
     val popular by viewModel.popularCategory.collectAsState()
-    var isPopularCategoryVisible by remember { mutableStateOf(popular) }
     val list = state.transactionList
     val userName by viewModel.userName.collectAsStateWithLifecycle()
 
@@ -182,19 +190,18 @@ fun HomeScreen(onSetting: () -> Unit, onCLicked: () -> Unit) {
                     Text(
                         "Account Balance",
                         fontSize = 14.sp,
-                        color = Color.Gray,
+                        color = Color.White,
                         fontFamily = FontFamily(Font(R.font.fig_tree_medium))
                     )
                 }
             }
-            if (isPopularCategoryVisible != null) {
-                HighestTransactionSection(popular)
-            }
+
+            popular?.let { HighestTransactionSection(popular) }
 
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(20.dp),
+                    .padding(horizontal = 20.dp, vertical = 5.dp),
                 horizontalArrangement = Arrangement.Center
             ) {
                 Box(
@@ -208,13 +215,14 @@ fun HomeScreen(onSetting: () -> Unit, onCLicked: () -> Unit) {
                             .fillMaxWidth()
                             .padding(5.dp),
                         horizontalAlignment = Alignment.CenterHorizontally,
+                        verticalArrangement = Arrangement.Center
                     ) {
                         if (state.transactionList.isNotEmpty()) {
                             state.maxTransaction?.let { TransactionLayout(it) }
                         } else {
                             Text(
                                 "Your Largest transaction will appear here",
-                                fontSize = 12.sp,
+                                fontSize = 16.sp,
                                 color = Color.Black,
                                 fontFamily = FontFamily(Font(R.font.fig_tree_medium)),
                                 modifier = Modifier.padding(5.dp)
@@ -243,13 +251,13 @@ fun HomeScreen(onSetting: () -> Unit, onCLicked: () -> Unit) {
                                 .toExpensesUnit(
                                     Color.Black
                                 ).toString() else "0.0",
-                            fontSize = 18.sp,
+                            fontSize = 20.sp,
                             color = Color.Black,
                             fontFamily = FontFamily(Font(R.font.fig_tree_medium)),
                         )
                         Text(
                             "Previous week",
-                            fontSize = 10.sp,
+                            fontSize = 12.sp,
                             color = Color.Black,
                             fontFamily = FontFamily(Font(R.font.fig_tree_medium)),
                         )
@@ -258,13 +266,14 @@ fun HomeScreen(onSetting: () -> Unit, onCLicked: () -> Unit) {
             }
             ButtomRow(
                 list = list
-            )
+            ) { onShowAll() }
         }
     }
 }
 
 @Composable
-fun ButtomRow(list: List<Transaction>) {
+fun ButtomRow(list: List<Transaction>, onShowAll: () -> Unit) {
+
     Box(
         modifier = Modifier
             .fillMaxWidth()
@@ -301,28 +310,47 @@ fun ButtomRow(list: List<Transaction>) {
                 ) {
 
                     Spacer(modifier = Modifier.height(10.dp))
-                    Text(
-                        "Last Transaction",
-                        fontSize = 18.sp,
-                        color = Color.Black,
-                        fontFamily = FontFamily(Font(R.font.fig_tree_medium)),
+                    Row(
                         modifier = Modifier
-                    )
-                    Spacer(modifier = Modifier.height(10.dp))
-                    LazyColumn(
-                        modifier = Modifier.fillMaxSize()
+                            .fillMaxWidth()
+                            .padding(top = 4.dp),
+                        horizontalArrangement = Arrangement.SpaceBetween,
+                        verticalAlignment = Alignment.CenterVertically
                     ) {
-
-                        items(list) { transaction ->
-                            TransactionListItem(transaction)
-                        }
+                        Text(
+                            "Last Transaction",
+                            fontSize = 18.sp,
+                            color = Color.Black,
+                            fontFamily = FontFamily(Font(R.font.fig_tree_medium)),
+                            modifier = Modifier
+                        )
+                        Text(text = "Show all",
+                            fontSize = 14.sp,
+                            color = PrimaryText,
+                            fontFamily = FontFamily(Font(R.font.fig_tree_medium)),
+                            modifier = Modifier.clickable { onShowAll() })
                     }
+                    Spacer(modifier = Modifier.height(10.dp))
+                    TransactionList(list)
                 }
             }
         }
     }
 }
 
+fun formatDateLabel(timestamp: Long): String {
+    val transactionDate = Instant.ofEpochMilli(timestamp)
+        .atZone(ZoneId.systemDefault())
+        .toLocalDate()
+
+    val today = LocalDate.now()
+
+    return when (transactionDate) {
+        today -> "Today"
+        today.minusDays(1) -> "Yesterday"
+        else -> transactionDate.format(DateTimeFormatter.ofPattern("MMMM dd"))
+    }
+}
 
 @Preview(showBackground = true)
 @Composable
@@ -335,14 +363,33 @@ fun ButtomRowPreview() {
             note = "Home decoration expenses",
             icon = R.drawable.home,
             category = "Home",
+            date = 2,
+            userId = UUID.randomUUID()
+        ), Transaction(
+            id = 1,
+            title = "Transportation",
+            amount = "2000.0".toDouble(),
+            note = "Home decoration expenses",
+            icon = R.drawable.transport,
+            category = "Home",
+            date = 1,
+            userId = UUID.randomUUID()
+        ),
+        Transaction(
+            id = 1,
+            title = "Food",
+            amount = "2000.0".toDouble(),
+            note = "Groceries",
+            icon = R.drawable.food,
+            category = "Home",
             date = 1,
             userId = UUID.randomUUID()
         ), Transaction(
             id = 1,
-            title = "Decoration",
+            title = "Education",
             amount = "2000.0".toDouble(),
-            note = "Home decoration expenses",
-            icon = R.drawable.home,
+            note = "Course Book Purchase",
+            icon = R.drawable.education,
             category = "Home",
             date = 1,
             userId = UUID.randomUUID()
@@ -350,11 +397,11 @@ fun ButtomRowPreview() {
     )
     ButtomRow(
         list = cat
-    )
+    ) {}
 }
 
 @Preview(showBackground = true)
 @Composable
 fun HomeScreenPreview() {
-    HomeScreen( {}) {}
+    HomeScreen({}, {}) {}
 }

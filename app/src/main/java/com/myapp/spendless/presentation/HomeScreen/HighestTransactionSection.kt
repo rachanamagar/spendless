@@ -20,6 +20,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.myapp.spendless.R
@@ -60,7 +61,7 @@ fun HighestTransactionSection(popular: String?){
                     if (it != null) {
                         Text(
                             text = it,
-                            fontFamily = FontFamily(Font(R.font.fig_tree_regular)),
+                            fontFamily = FontFamily(Font(R.font.fig_tree_medium)),
                             fontSize = 18.sp,
                             color = Color.White
                         )
@@ -75,4 +76,11 @@ fun HighestTransactionSection(popular: String?){
             }
         }
     }
+}
+
+
+@Preview(showBackground = true)
+@Composable
+fun HighestTransactionPreview() {
+    HighestTransactionSection("Food")
 }
