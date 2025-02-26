@@ -174,7 +174,7 @@ fun LoginScreen(navController: NavController, onLoginClicked:() -> Unit) {
             color = Primary,
             fontFamily = FontFamily(Font(R.font.fig_tee_bold)),
             fontSize = 14.sp,
-            modifier = Modifier.padding(8.dp)
+            modifier = Modifier.padding(8.dp).clickable { navController.navigate("WelcomeScreen") }
         )
     }
 }

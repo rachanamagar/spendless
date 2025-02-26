@@ -4,21 +4,19 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.myapp.spendless.model.TransactionRepository
 import com.myapp.spendless.presentation.component.TransactionEvent
-import com.myapp.spendless.presentation.setting.preference.model.AmountFormat
-import com.myapp.spendless.presentation.setting.preference.model.DecimalSeparator
-import com.myapp.spendless.presentation.setting.preference.model.PriceDisplayConfig
-import com.myapp.spendless.presentation.setting.preference.model.ThousandSeparator
 import com.myapp.spendless.presentation.state.TransactionState
 import com.myapp.spendless.util.DataStoreManager
 import com.myapp.spendless.util.SessionManager
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -35,6 +33,9 @@ class TransactionViewModel @Inject constructor(
 
     private val _popularCategory = MutableStateFlow<String?>(null)
     val popularCategory = _popularCategory.asStateFlow()
+
+    val userName: StateFlow<String?> =
+        sessionManager.getUserName().stateIn(viewModelScope, SharingStarted.Lazily, null)
 
     init {
         getAllTransaction()
@@ -93,9 +94,9 @@ class TransactionViewModel @Inject constructor(
         )
     }
 
-    fun changeSymbol(symbol: String){
+    fun changeSymbol(symbol: String) {
         _uiState.value = _uiState.value.copy(
-            symbol =  symbol
+            symbol = symbol
         )
     }
 

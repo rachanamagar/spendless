@@ -56,7 +56,7 @@ fun SpendlessPreferenceScreen(onSave:(String)-> Unit, onBackPressed: () -> Unit)
                     Icon(
                         imageVector = Icons.Filled.ArrowBack,
                         contentDescription = null,
-                        modifier = Modifier.clickable { onBackPressed() })
+                        modifier = Modifier.clickable { })
                 },
                 title = {
                     Text(

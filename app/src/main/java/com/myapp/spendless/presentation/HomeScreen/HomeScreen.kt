@@ -64,7 +64,7 @@ import java.util.UUID
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun HomeScreen(getName: String, onSetting: () -> Unit, onCLicked: () -> Unit) {
+fun HomeScreen(onSetting: () -> Unit, onCLicked: () -> Unit) {
 
     val viewModel: TransactionViewModel = hiltViewModel()
     val state by viewModel.uiState.collectAsState()
@@ -72,6 +72,7 @@ fun HomeScreen(getName: String, onSetting: () -> Unit, onCLicked: () -> Unit) {
     val popular by viewModel.popularCategory.collectAsState()
     var isPopularCategoryVisible by remember { mutableStateOf(popular) }
     val list = state.transactionList
+    val userName by viewModel.userName.collectAsStateWithLifecycle()
 
     val preferencesViewModel: PreferencesViewModel = hiltViewModel()
     val uiPreferences by preferencesViewModel.uiPreferenceState.collectAsStateWithLifecycle()
@@ -91,7 +92,7 @@ fun HomeScreen(getName: String, onSetting: () -> Unit, onCLicked: () -> Unit) {
                         horizontalArrangement = Arrangement.SpaceBetween
                     ) {
                         Text(
-                            text = getName,
+                            text = userName ?: "Guest",
                             color = Color.White,
                             fontSize = 20.sp,
                             fontFamily = FontFamily(Font(R.font.fig_tree_semi_bold))
@@ -355,5 +356,5 @@ fun ButtomRowPreview() {
 @Preview(showBackground = true)
 @Composable
 fun HomeScreenPreview() {
-    HomeScreen("user1", {}) {}
+    HomeScreen( {}) {}
 }

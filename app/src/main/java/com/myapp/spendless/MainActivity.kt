@@ -83,17 +83,13 @@ class MainActivity : ComponentActivity() {
                         }
 
                         composable(
-                            "HomeScreen/{name}",
-                            arguments = listOf(
-                                navArgument("name") { type = NavType.StringType })
-                        ) { backStackEntry ->
-                            val name = backStackEntry.arguments?.getString("name")
-                            if (name != null) {
-                                HomeScreen(name, { navController.navigate("settings") }) {
-                                    navController.navigate("newTransactionScreen")
-                                }
+                            "HomeScreen"
+                        ) {
+                            HomeScreen({ navController.navigate("settings") }) {
+                                navController.navigate("newTransactionScreen")
                             }
                         }
+
 
                         composable("newTransactionScreen") {
                             val viewModel: TransactionViewModel = hiltViewModel()
@@ -112,7 +108,7 @@ class MainActivity : ComponentActivity() {
                                 navController.navigate("security")
                             },
                                 { navController.navigate("preferences") },
-                                { navController.popBackStack()}
+                                { navController.popBackStack() }
                             ) {
                                 viewmodel.logOutUser()
                                 navController.navigate("LoginScreen")
@@ -125,9 +121,9 @@ class MainActivity : ComponentActivity() {
 
                         composable("preferences") {
                             SpendlessPreferenceScreen(
-                                onSave = {viewModelTransaction.changeSymbol(it)},
+                                onSave = { viewModelTransaction.changeSymbol(it) },
                             )
-                                { navController.navigate("HomeScreen") }
+                            { navController.navigate("HomeScreen") }
 
                         }
 
