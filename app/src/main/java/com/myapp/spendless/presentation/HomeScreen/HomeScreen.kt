@@ -14,8 +14,6 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
@@ -30,9 +28,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -40,7 +35,6 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
-import androidx.compose.ui.text.toUpperCase
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -50,15 +44,12 @@ import com.myapp.spendless.R
 import com.myapp.spendless.model.Transaction
 import com.myapp.spendless.presentation.HomeScreen.ui.TransactionList
 import com.myapp.spendless.presentation.component.TransactionLayout
-import com.myapp.spendless.presentation.component.TransactionListItem
-import com.myapp.spendless.presentation.component.toDateFormat
-import com.myapp.spendless.presentation.setting.formatAmount
 import com.myapp.spendless.presentation.setting.formatTotalAmount
 import com.myapp.spendless.presentation.setting.preference.viewModel.PreferencesViewModel
-import com.myapp.spendless.presentation.setting.toDollar
 import com.myapp.spendless.presentation.setting.toExpensesUnit
 import com.myapp.spendless.presentation.viewmodels.TransactionViewModel
 import com.myapp.spendless.ui.theme.Primary
+import com.myapp.spendless.ui.theme.PrimaryContainer
 import com.myapp.spendless.ui.theme.PrimaryFixed
 import com.myapp.spendless.ui.theme.PrimaryText
 import com.myapp.spendless.ui.theme.SecondaryContainer
@@ -68,7 +59,6 @@ import java.time.Instant
 import java.time.LocalDate
 import java.time.ZoneId
 import java.time.format.DateTimeFormatter
-import java.util.Locale
 import java.util.UUID
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -158,7 +148,7 @@ fun HomeScreen(onSetting: () -> Unit, onCLicked: () -> Unit, onShowAll: () -> Un
                 Column(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .padding(16.dp),
+                        .padding(10.dp),
                     horizontalAlignment = Alignment.CenterHorizontally,
                     verticalArrangement = Arrangement.Center,
 
@@ -201,7 +191,7 @@ fun HomeScreen(onSetting: () -> Unit, onCLicked: () -> Unit, onShowAll: () -> Un
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(horizontal = 20.dp, vertical = 5.dp),
+                    .padding(horizontal = 10.dp, vertical = 5.dp),
                 horizontalArrangement = Arrangement.Center
             ) {
                 Box(
@@ -277,15 +267,15 @@ fun ButtomRow(list: List<Transaction>, onShowAll: () -> Unit) {
     Box(
         modifier = Modifier
             .fillMaxWidth()
-            .background(PrimaryFixed, RoundedCornerShape(topStart = 16.dp, topEnd = 16.dp))
+            .background(PrimaryContainer.copy(alpha = 0.1f), RoundedCornerShape(topStart = 16.dp, topEnd = 16.dp))
     ) {
         Column(
             modifier = Modifier
                 .fillMaxWidth()
                 .fillMaxHeight()
                 // .height(442.dp)
-                .background(SurfaceBackground, shape = RoundedCornerShape(16.dp))
-                .padding(16.dp),
+                .background(SurfaceBackground, shape = RoundedCornerShape(topStart = 16.dp, topEnd = 16.dp))
+                .padding(10.dp),
             verticalArrangement = Arrangement.Center,
             horizontalAlignment = Alignment.CenterHorizontally
         ) {

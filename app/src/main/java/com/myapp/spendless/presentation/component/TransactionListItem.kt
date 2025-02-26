@@ -1,6 +1,7 @@
 package com.myapp.spendless.presentation.component
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -15,6 +16,10 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -36,15 +41,22 @@ import java.util.UUID
 @Composable
 fun TransactionListItem(transaction: Transaction) {
 
+    var isExpanded by remember { mutableStateOf(false) }
     Column(
         modifier = Modifier
             .fillMaxWidth()
-            .background(Color.Transparent,RoundedCornerShape(16.dp))
+            .background(
+                if (!isExpanded) Color.Transparent else Color.White,
+                RoundedCornerShape(16.dp)
+            )
+            .clickable { isExpanded = !isExpanded }
     ) {
 
-        Row(modifier = Modifier
-            .fillMaxWidth()
-            .padding(10.dp)) {
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(10.dp)
+        ) {
 
             Box(
                 modifier = Modifier
@@ -63,17 +75,28 @@ fun TransactionListItem(transaction: Transaction) {
                 )
             }
             Spacer(modifier = Modifier.width(8.dp))
-            Column(modifier = Modifier
-                .weight(5f)
-                .padding(4.dp)) {
+            Column(
+                modifier = Modifier
+                    .weight(5f)
+                    .padding(4.dp)
+            ) {
                 Text(text = transaction.title, fontSize = 16.sp)
                 Text(text = transaction.category, fontSize = 12.sp, color = Color.Gray)
+                Spacer(modifier = Modifier.height(4.dp))
+                if (isExpanded) {
+                    Text(
+                        text = transaction.note,
+                        fontFamily = FontFamily(Font(R.font.fig_tree_medium)),
+                        fontSize = 14.sp,
+                        color = Color.Gray
+                    )
+                }
             }
             Spacer(modifier = Modifier.width(8.dp))
 
-            val amountText = if(transaction.category == "Income"){
+            val amountText = if (transaction.category == "Income") {
                 transaction.amount.toString().toIncomeUnit()
-            }else{
+            } else {
                 transaction.amount.toString().toExpensesUnit(Error)
             }
             Text(
@@ -82,7 +105,7 @@ fun TransactionListItem(transaction: Transaction) {
                 fontFamily = FontFamily(Font(R.font.fig_tree_medium)),
                 modifier = Modifier
                     .padding(4.dp)
-                    //.weight(2f)
+                //.weight(2f)
             )
 
         }
