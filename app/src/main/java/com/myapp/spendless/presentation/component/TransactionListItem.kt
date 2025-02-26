@@ -35,6 +35,7 @@ import com.myapp.spendless.presentation.setting.toExpensesUnit
 import com.myapp.spendless.presentation.setting.toIncomeUnit
 import com.myapp.spendless.ui.theme.Error
 import com.myapp.spendless.ui.theme.PrimaryFixed
+import com.myapp.spendless.ui.theme.SecondaryContainer
 import com.myapp.spendless.ui.theme.SurfaceBackground
 import java.util.UUID
 
@@ -61,7 +62,7 @@ fun TransactionListItem(transaction: Transaction) {
             Box(
                 modifier = Modifier
                     .weight(1f)
-                    .background(PrimaryFixed, RoundedCornerShape(12.dp))
+                    .background(if(transaction.category == "Income") SecondaryContainer.copy(alpha = 0.4f) else PrimaryFixed, RoundedCornerShape(12.dp))
                     .width(44.dp)
                     .height(44.dp)
                     .aspectRatio(1f),
@@ -71,7 +72,7 @@ fun TransactionListItem(transaction: Transaction) {
                     painter = painterResource(transaction.icon),
                     tint = Color.Unspecified,
                     contentDescription = null,
-                    modifier = Modifier.size(30.dp)
+                    modifier = Modifier.size(20.dp)
                 )
             }
             Spacer(modifier = Modifier.width(8.dp))
@@ -87,8 +88,7 @@ fun TransactionListItem(transaction: Transaction) {
                     Text(
                         text = transaction.note,
                         fontFamily = FontFamily(Font(R.font.fig_tree_medium)),
-                        fontSize = 14.sp,
-                        color = Color.Gray
+                        fontSize = 14.sp
                     )
                 }
             }
@@ -97,7 +97,7 @@ fun TransactionListItem(transaction: Transaction) {
             val amountText = if (transaction.category == "Income") {
                 transaction.amount.toString().toIncomeUnit()
             } else {
-                transaction.amount.toString().toExpensesUnit(Error)
+                transaction.amount.toString().toExpensesUnit(Color.Black)
             }
             Text(
                 text = amountText,
