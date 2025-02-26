@@ -40,6 +40,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
+import androidx.compose.ui.text.toUpperCase
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -47,6 +48,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.myapp.spendless.R
 import com.myapp.spendless.model.Transaction
+import com.myapp.spendless.presentation.HomeScreen.ui.TransactionList
 import com.myapp.spendless.presentation.component.TransactionLayout
 import com.myapp.spendless.presentation.component.TransactionListItem
 import com.myapp.spendless.presentation.component.toDateFormat
@@ -58,6 +60,7 @@ import com.myapp.spendless.presentation.setting.toExpensesUnit
 import com.myapp.spendless.presentation.viewmodels.TransactionViewModel
 import com.myapp.spendless.ui.theme.Primary
 import com.myapp.spendless.ui.theme.PrimaryFixed
+import com.myapp.spendless.ui.theme.PrimaryText
 import com.myapp.spendless.ui.theme.SecondaryContainer
 import com.myapp.spendless.ui.theme.SecondaryFixed
 import com.myapp.spendless.ui.theme.SurfaceBackground
@@ -65,11 +68,12 @@ import java.time.Instant
 import java.time.LocalDate
 import java.time.ZoneId
 import java.time.format.DateTimeFormatter
+import java.util.Locale
 import java.util.UUID
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun HomeScreen(onSetting: () -> Unit, onCLicked: () -> Unit) {
+fun HomeScreen(onSetting: () -> Unit, onCLicked: () -> Unit, onShowAll: () -> Unit) {
 
     val viewModel: TransactionViewModel = hiltViewModel()
     val state by viewModel.uiState.collectAsState()
@@ -262,15 +266,14 @@ fun HomeScreen(onSetting: () -> Unit, onCLicked: () -> Unit) {
             }
             ButtomRow(
                 list = list
-            )
+            ) { onShowAll() }
         }
     }
 }
 
 @Composable
-fun ButtomRow(list: List<Transaction>) {
+fun ButtomRow(list: List<Transaction>, onShowAll: () -> Unit) {
 
-    val groupedList = list.groupBy { it.date }
     Box(
         modifier = Modifier
             .fillMaxWidth()
@@ -307,31 +310,28 @@ fun ButtomRow(list: List<Transaction>) {
                 ) {
 
                     Spacer(modifier = Modifier.height(10.dp))
-                    Text(
-                        "Last Transaction",
-                        fontSize = 18.sp,
-                        color = Color.Black,
-                        fontFamily = FontFamily(Font(R.font.fig_tree_medium)),
+                    Row(
                         modifier = Modifier
-                    )
-                    Spacer(modifier = Modifier.height(10.dp))
-                    LazyColumn(
-                        modifier = Modifier.fillMaxSize()
+                            .fillMaxWidth()
+                            .padding(top = 4.dp),
+                        horizontalArrangement = Arrangement.SpaceBetween,
+                        verticalAlignment = Alignment.CenterVertically
                     ) {
-                        groupedList.forEach { (date, transaction) ->
-                            item {
-                                Text(
-                                    text = formatDateLabel(date),
-                                    fontSize = 18.sp,
-                                    color = Color.Black,
-                                    fontFamily = FontFamily(Font(R.font.fig_tree_medium)),
-                                )
-                            }
-                            items(transaction) { eachTransaction ->
-                                TransactionListItem(eachTransaction)
-                            }
-                        }
+                        Text(
+                            "Last Transaction",
+                            fontSize = 18.sp,
+                            color = Color.Black,
+                            fontFamily = FontFamily(Font(R.font.fig_tree_medium)),
+                            modifier = Modifier
+                        )
+                        Text(text = "Show all",
+                            fontSize = 14.sp,
+                            color = PrimaryText,
+                            fontFamily = FontFamily(Font(R.font.fig_tree_medium)),
+                            modifier = Modifier.clickable { onShowAll() })
                     }
+                    Spacer(modifier = Modifier.height(10.dp))
+                    TransactionList(list)
                 }
             }
         }
@@ -348,10 +348,9 @@ fun formatDateLabel(timestamp: Long): String {
     return when (transactionDate) {
         today -> "Today"
         today.minusDays(1) -> "Yesterday"
-        else -> transactionDate.format(DateTimeFormatter.ofPattern("dd MMM yyyy"))
+        else -> transactionDate.format(DateTimeFormatter.ofPattern("MMMM dd"))
     }
 }
-
 
 @Preview(showBackground = true)
 @Composable
@@ -398,11 +397,11 @@ fun ButtomRowPreview() {
     )
     ButtomRow(
         list = cat
-    )
+    ) {}
 }
 
 @Preview(showBackground = true)
 @Composable
 fun HomeScreenPreview() {
-    HomeScreen({}) {}
+    HomeScreen({}, {}) {}
 }

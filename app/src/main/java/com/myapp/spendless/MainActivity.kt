@@ -19,6 +19,7 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import com.myapp.spendless.presentation.HomeScreen.HomeScreen
+import com.myapp.spendless.presentation.HomeScreen.ListOfTransaction
 import com.myapp.spendless.presentation.LoginScreen.LoginScreen
 import com.myapp.spendless.presentation.component.NewTransaction
 import com.myapp.spendless.presentation.LoginScreen.PinLoginScreen
@@ -53,7 +54,7 @@ class MainActivity : ComponentActivity() {
 
                     NavHost(
                         navController = navController,
-                        startDestination = "WelcomeScreen"
+                        startDestination = "LoginScreen"
                     ) {
 
                         composable("WelcomeScreen") {
@@ -85,11 +86,14 @@ class MainActivity : ComponentActivity() {
                         composable(
                             "HomeScreen"
                         ) {
-                            HomeScreen({ navController.navigate("settings") }) {
-                                navController.navigate("newTransactionScreen")
+                            HomeScreen(
+                                { navController.navigate("settings") },
+                                {navController.navigate("newTransactionScreen")}
+                            ) {
+                                navController.navigate("AllTransaction")
+
                             }
                         }
-
 
                         composable("newTransactionScreen") {
                             val viewModel: TransactionViewModel = hiltViewModel()
@@ -101,6 +105,10 @@ class MainActivity : ComponentActivity() {
                             ) {
                                 navController.popBackStack()
                             }
+                        }
+
+                        composable("AllTransaction") {
+                            ListOfTransaction { navController.popBackStack() }
                         }
 
                         composable("settings") {
