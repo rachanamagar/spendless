@@ -20,6 +20,7 @@ import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -45,6 +46,7 @@ import com.myapp.spendless.presentation.component.ButtomError
 import com.myapp.spendless.presentation.viewmodels.UserViewmodel
 import com.myapp.spendless.ui.theme.Primary
 import com.myapp.spendless.ui.theme.PrimaryFixed
+import kotlinx.coroutines.delay
 
 @Composable
 fun PinScreen(navController: NavController, viewmodel: UserViewmodel) {
@@ -57,7 +59,8 @@ fun PinScreen(navController: NavController, viewmodel: UserViewmodel) {
 
     val context = LocalContext.current
 
-    val pinCode = pinCodeList.joinToString("")
+    var isCodeInCorrect by remember { mutableStateOf(false) }
+    var pinCode = pinCodeList.joinToString("")
     val pinLength = 5
 
     Column(
@@ -201,9 +204,9 @@ fun PinScreen(navController: NavController, viewmodel: UserViewmodel) {
 
     if (confirmPinCode.length == pinLength) {
         if (pinCode != confirmPinCode) {
-            Log.d("TAG", pinCode)
-            Log.d("TAG", confirmPinCode)
+            isCodeInCorrect = true
             ButtomError("PINs don’t match. Try again")
+
         } else {
             viewmodel.getPin(pinCode)
             Log.d("TAG", pinCode)
@@ -211,6 +214,12 @@ fun PinScreen(navController: NavController, viewmodel: UserViewmodel) {
             navController.navigate("LoginScreen")
         }
     }
+
+    LaunchedEffect(isCodeInCorrect) {
+        delay(1000)
+        confirmPinCode = ""
+    }
+
 }
 
 

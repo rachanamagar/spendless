@@ -172,7 +172,8 @@ fun PinLoginScreen(name: String, navController: NavController) {
        viewmodel.validateUser(name, pinCode){
            if (it){
                userValid = true
-               navController.navigate("HomeScreen/$name")
+               viewmodel.saveUserName(name)
+               navController.navigate("HomeScreen")
            }
            else{
                userValid = false
