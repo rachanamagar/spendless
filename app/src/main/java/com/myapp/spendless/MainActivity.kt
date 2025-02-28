@@ -1,6 +1,7 @@
 package com.myapp.spendless
 
 import android.os.Bundle
+import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
@@ -8,11 +9,14 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
@@ -25,7 +29,8 @@ import com.myapp.spendless.presentation.component.NewTransaction
 import com.myapp.spendless.presentation.LoginScreen.PinLoginScreen
 import com.myapp.spendless.presentation.Registration.PinScreen
 import com.myapp.spendless.presentation.Registration.WelcomeScreen
-import com.myapp.spendless.presentation.setting.SecurityScreen
+import com.myapp.spendless.feature.Setting.presentation.SecurityScreen
+import com.myapp.spendless.feature.Setting.presentation.SessionViewModel
 import com.myapp.spendless.presentation.setting.SettingScreen
 import com.myapp.spendless.presentation.setting.preference.SpendlessPreferenceScreen
 import com.myapp.spendless.presentation.viewmodels.TransactionViewModel
@@ -33,6 +38,7 @@ import com.myapp.spendless.presentation.viewmodels.UserViewmodel
 import com.myapp.spendless.ui.theme.SpendlessTheme
 import com.myapp.spendless.ui.theme.SurfaceBackground
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.flow.collect
 
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
@@ -50,7 +56,6 @@ class MainActivity : ComponentActivity() {
                     val navController = rememberNavController()
                     val viewmodel: UserViewmodel = hiltViewModel()
                     val viewModelTransaction: TransactionViewModel = hiltViewModel()
-                    val state by viewModelTransaction.uiState.collectAsStateWithLifecycle()
 
                     NavHost(
                         navController = navController,
@@ -85,6 +90,7 @@ class MainActivity : ComponentActivity() {
 
                         composable(
                             "HomeScreen"
+
                         ) {
                             HomeScreen(
                                 { navController.navigate("settings") },
@@ -124,7 +130,9 @@ class MainActivity : ComponentActivity() {
                         }
 
                         composable("security") {
-                            SecurityScreen({ navController.popBackStack() })
+                            SecurityScreen({ navController.popBackStack() }){
+                                navController.navigate("LoginScreen")
+                            }
                         }
 
                         composable("preferences") {
@@ -139,6 +147,20 @@ class MainActivity : ComponentActivity() {
                 }
             }
         }
+    }
+    override fun onResume() {
+        super.onResume()
+        Log.d("MainActivity", "onResume called - Activity in foreground")
+    }
+
+    override fun onPause() {
+        super.onPause()
+        Log.d("MainActivity", "onPause called - Activity in background")
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        Log.d("MainActivity", "onDestroy called - Activity destroyed")
     }
 }
 

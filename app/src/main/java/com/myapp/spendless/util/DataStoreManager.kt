@@ -1,7 +1,6 @@
 package com.myapp.spendless.util
 
 import android.content.Context
-import androidx.datastore.dataStore
 import androidx.datastore.preferences.core.doublePreferencesKey
 import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.stringPreferencesKey
@@ -61,7 +60,8 @@ class DataStoreManager(private val context: Context) {
         preferences[USER_ID]?.let { UUID.fromString(it) }
     }
 
-    suspend fun clearUserId() {
+    suspend fun clearUserSession() {
         context.dataStore.edit { it.clear() }
     }
+
 }

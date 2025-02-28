@@ -16,7 +16,7 @@ class SessionManager @Inject constructor(
     }
 
     suspend fun clearUserSession(){
-        dataStoreManager.clearUserId()
+        dataStoreManager.clearUserSession()
     }
 
     suspend fun saveUserName(userName: String){

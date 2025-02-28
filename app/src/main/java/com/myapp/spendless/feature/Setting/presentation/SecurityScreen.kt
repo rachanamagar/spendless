@@ -1,5 +1,6 @@
-package com.myapp.spendless.presentation.setting
+package com.myapp.spendless.feature.Setting.presentation
 
+import android.util.Log
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
@@ -14,6 +15,7 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.remember
@@ -24,21 +26,53 @@ import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.myapp.spendless.R
+import com.myapp.spendless.feature.Setting.model.SessionExpiry
 import com.myapp.spendless.presentation.component.AppButton
+import com.myapp.spendless.presentation.setting.SegmentedButton
+import kotlinx.coroutines.flow.collect
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun SecurityScreen(onBackPressed:()-> Unit) {
+fun SecurityScreen(onBackPressed: () -> Unit, navigateToLogin:()-> Unit) {
 
-    var selectedIndex by remember { mutableIntStateOf(0) }
+    val viewModel: SessionViewModel = hiltViewModel()
+    val state by viewModel.sessionState.collectAsStateWithLifecycle()
+
+    val list = listOf("5 min", "15 min", "30 min", "1 hour")
+    val lockedOutDurationList = listOf("15s", "30s", "1 min", "5 min")
+
+    val sessionExpiryMap = mapOf(
+        0 to SessionExpiry.FirstDuration,
+        1 to SessionExpiry.SecondDuration,
+        2 to SessionExpiry.ThirdDuration,
+        3 to SessionExpiry.FourthDuration
+    )
+    var selectedIndex by remember {
+        mutableIntStateOf(
+            sessionExpiryMap.entries.firstOrNull { it.value == state.expiryDuration.duration }?.key
+                ?: 0
+        )
+    }
+
     var lockedSelectedIndex by remember { mutableIntStateOf(0) }
+
+    LaunchedEffect(state.isSessionExpire) {
+        if (state.isSessionExpire) {
+            navigateToLogin()
+        }
+    }
 
     Scaffold(
         topBar = {
             TopAppBar(
                 navigationIcon = {
-                    Icon(imageVector = Icons.Filled.ArrowBack, contentDescription = null, modifier = Modifier.clickable { onBackPressed() })
+                    Icon(
+                        imageVector = Icons.Filled.ArrowBack,
+                        contentDescription = null,
+                        modifier = Modifier.clickable { onBackPressed() })
                 },
                 title = {
                     Text(
@@ -62,25 +96,32 @@ fun SecurityScreen(onBackPressed:()-> Unit) {
                 modifier = Modifier.padding(start = 10.dp, top = 10.dp)
             )
             Spacer(modifier = Modifier.height(10.dp))
-
-            val list = listOf("5 min", "15 min", "30 min", "1 hr")
             SegmentedButton(
-                list,
+                list = list,
                 selectedIndex = selectedIndex,
-            { selectedIndex = it }){}
+                onSelectedIndex = { index ->
+                    selectedIndex = index
+                },
+                onItemClicked = { index ->
+                    sessionExpiryMap[index]?.let { viewModel.setSessionExpiry(it) }
+                    Log.d("SecurityScreen", "User selected session expiry: ${list[index]}")
+                }
+            )
 
             Spacer(modifier = Modifier.height(10.dp))
+
             Text("Locked out duration ", modifier = Modifier.padding(start = 10.dp, top = 10.dp))
             Spacer(modifier = Modifier.height(10.dp))
-            val lockedOutDurationList = listOf("15s", "30s", "1 min", "5 min")
-            SegmentedButton(lockedOutDurationList, lockedSelectedIndex,{}) {
+            SegmentedButton(lockedOutDurationList,
+                lockedSelectedIndex,
+                {}) {
                 lockedSelectedIndex = it
             }
 
             Spacer(modifier = Modifier.height(20.dp))
             AppButton(
                 modifier = Modifier
-                    .clickable { }, "Save"
+                    .clickable { onBackPressed() }, "Save"
             )
 
         }
@@ -90,5 +131,5 @@ fun SecurityScreen(onBackPressed:()-> Unit) {
 @Preview(showBackground = true)
 @Composable
 fun SecurityScreenPreview() {
-    SecurityScreen({})
+    SecurityScreen({}){}
 }
