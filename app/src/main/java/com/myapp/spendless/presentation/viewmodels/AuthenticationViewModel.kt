@@ -38,7 +38,7 @@ class AuthenticationViewModel @Inject constructor(
         }
     }
     suspend fun logOutUser(){
-        dataStoreManager.clearUserId()
+        dataStoreManager.clearUserSession()
         _userId.value = null
     }
 }
