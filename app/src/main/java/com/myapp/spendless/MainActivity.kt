@@ -57,6 +57,14 @@ class MainActivity : ComponentActivity() {
                     val viewmodel: UserViewmodel = hiltViewModel()
                     val viewModelTransaction: TransactionViewModel = hiltViewModel()
 
+                    val viewModelSession: SessionViewModel = hiltViewModel()
+                    val state by viewModelSession.sessionState.collectAsStateWithLifecycle()
+
+                    LaunchedEffect(state.isSessionExpire) {
+                        if (state.isSessionExpire) {
+                            navController.navigate("LoginScreen")
+                        }
+                    }
                     NavHost(
                         navController = navController,
                         startDestination = "LoginScreen"
@@ -140,9 +148,7 @@ class MainActivity : ComponentActivity() {
                                 onSave = { viewModelTransaction.changeSymbol(it) },
                             )
                             { navController.navigate("HomeScreen") }
-
                         }
-
                     }
                 }
             }

@@ -59,12 +59,6 @@ fun SecurityScreen(onBackPressed: () -> Unit, navigateToLogin:()-> Unit) {
 
     var lockedSelectedIndex by remember { mutableIntStateOf(0) }
 
-    LaunchedEffect(state.isSessionExpire) {
-        if (state.isSessionExpire) {
-            navigateToLogin()
-        }
-    }
-
     Scaffold(
         topBar = {
             TopAppBar(
