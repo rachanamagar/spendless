@@ -39,6 +39,7 @@ import com.myapp.spendless.R
 import com.myapp.spendless.feature.HomeScreen.presentation.component.ButtomError
 import com.myapp.spendless.feature.Registration.presentation.PinDelete
 import com.myapp.spendless.feature.Registration.presentation.PinNumber
+import com.myapp.spendless.feature.Registration.presentation.UserAction
 import com.myapp.spendless.feature.Registration.presentation.UserViewmodel
 import com.myapp.spendless.ui.theme.Primary
 import kotlinx.coroutines.Dispatchers
@@ -173,10 +174,10 @@ fun PinLoginScreen(name: String, navController: NavController) {
 
             try {
                 withContext(Dispatchers.IO) {
-                    viewmodel.validateUser(name, pinCode) { isValid ->
+                    viewmodel.onAction(UserAction.ValidateUser(name, pinCode){ isValid ->
                         coroutineScope.launch {
                             if (isValid) {
-                                viewmodel.saveUserName(name)
+                                viewmodel.onAction(UserAction.SaveUserName(name))
                                 navController.previousBackStackEntry
                                     ?.savedStateHandle
                                     ?.set("pinCode", pinCode)
@@ -189,7 +190,7 @@ fun PinLoginScreen(name: String, navController: NavController) {
                                 isPinComplete = false
                             }
                         }
-                    }
+                    })
                 }
             } catch (e: Exception) {
                 Log.e("PinValidation", "Error during validation", e)
