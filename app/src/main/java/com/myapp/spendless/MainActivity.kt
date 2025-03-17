@@ -10,35 +10,32 @@ import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
-import com.myapp.spendless.presentation.HomeScreen.HomeScreen
-import com.myapp.spendless.presentation.HomeScreen.ListOfTransaction
-import com.myapp.spendless.presentation.LoginScreen.LoginScreen
-import com.myapp.spendless.presentation.component.NewTransaction
-import com.myapp.spendless.presentation.LoginScreen.PinLoginScreen
-import com.myapp.spendless.presentation.Registration.PinScreen
-import com.myapp.spendless.presentation.Registration.WelcomeScreen
+import com.myapp.spendless.feature.HomeScreen.presentation.ui.HomeScreen
+import com.myapp.spendless.feature.HomeScreen.presentation.ui.ListOfTransaction
+import com.myapp.spendless.feature.LoginScreen.presentation.LoginScreen
+import com.myapp.spendless.feature.HomeScreen.presentation.component.NewTransaction
+import com.myapp.spendless.feature.LoginScreen.presentation.PinLoginScreen
+import com.myapp.spendless.feature.Registration.presentation.PinScreen
+import com.myapp.spendless.feature.Registration.presentation.WelcomeScreen
 import com.myapp.spendless.feature.Setting.presentation.SecurityScreen
 import com.myapp.spendless.feature.Setting.presentation.SessionViewModel
-import com.myapp.spendless.presentation.setting.SettingScreen
-import com.myapp.spendless.presentation.setting.preference.SpendlessPreferenceScreen
-import com.myapp.spendless.presentation.viewmodels.TransactionViewModel
-import com.myapp.spendless.presentation.viewmodels.UserViewmodel
+import com.myapp.spendless.feature.Setting.SettingScreen
+import com.myapp.spendless.feature.Setting.preference.SpendlessPreferenceScreen
+import com.myapp.spendless.feature.HomeScreen.presentation.viewmodel.TransactionViewModel
+import com.myapp.spendless.feature.Registration.presentation.UserViewmodel
 import com.myapp.spendless.ui.theme.SpendlessTheme
 import com.myapp.spendless.ui.theme.SurfaceBackground
 import dagger.hilt.android.AndroidEntryPoint
-import kotlinx.coroutines.flow.collect
 
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
@@ -81,8 +78,11 @@ class MainActivity : ComponentActivity() {
                             PinScreen(navController, viewmodel)
                         }
 
-                        composable("LoginScreen") {
-                            LoginScreen(navController) {}
+                        composable("LoginScreen") { entry ->
+                            val pin = entry.savedStateHandle.get<String>("pinCode") ?: "Pin"
+                            LoginScreen(navController, pin) {
+                                navController.navigate("HomeScreen")
+                            }
                         }
 
                         composable(

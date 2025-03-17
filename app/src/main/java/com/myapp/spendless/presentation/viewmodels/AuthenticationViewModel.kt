@@ -2,7 +2,7 @@ package com.myapp.spendless.presentation.viewmodels
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.myapp.spendless.model.UserRepository
+import com.myapp.spendless.feature.Registration.model.UserRepository
 import com.myapp.spendless.util.DataStoreManager
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow

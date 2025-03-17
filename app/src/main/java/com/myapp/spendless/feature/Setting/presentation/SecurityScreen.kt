@@ -30,8 +30,8 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.myapp.spendless.R
 import com.myapp.spendless.feature.Setting.model.SessionExpiry
-import com.myapp.spendless.presentation.component.AppButton
-import com.myapp.spendless.presentation.setting.SegmentedButton
+import com.myapp.spendless.feature.HomeScreen.presentation.component.AppButton
+import com.myapp.spendless.feature.Setting.SegmentedButton
 import kotlinx.coroutines.flow.collect
 
 @OptIn(ExperimentalMaterial3Api::class)
