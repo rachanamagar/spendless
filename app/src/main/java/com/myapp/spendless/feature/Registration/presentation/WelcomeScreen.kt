@@ -40,23 +40,24 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.viewmodel.compose.viewModel
 import com.myapp.spendless.R
 import com.myapp.spendless.feature.HomeScreen.presentation.component.ButtomError
+import com.myapp.spendless.feature.Registration.presentation.state.UserState
 import com.myapp.spendless.ui.theme.BackgroundBlack
 import com.myapp.spendless.ui.theme.Primary
 import kotlinx.coroutines.launch
 
 @Composable
 fun WelcomeScreen(
-    viewmodel: UserViewmodel = hiltViewModel(),
+    state: UserState,
+    onEvent:(UserAction) -> Unit,
     onNextClicked: () -> Unit,
     onLogin: () -> Unit
 ) {
 
     val focusManager = LocalFocusManager.current
     val focusRequester = remember { FocusRequester() }
-
-    val state by viewmodel.state.collectAsState()
 
     val coroutineScope = rememberCoroutineScope()
 
@@ -99,9 +100,9 @@ fun WelcomeScreen(
         OutlinedTextField(
             value = state.user.name,
             onValueChange = { newText ->
-                viewmodel.getUsername(newText)
+                onEvent(UserAction.GetSessionUserName(newText))
                 coroutineScope.launch  {
-                    viewmodel.isExistingUser(newText)
+                    onEvent(UserAction.ExistingUser(newText))
                 }
             },
             colors = OutlinedTextFieldDefaults.colors(
@@ -199,6 +200,5 @@ fun WelcomeScreen(
 @Preview(showBackground = true)
 @Composable
 fun WelcomeScreenPreview() {
-    val viewmodel: UserViewmodel = hiltViewModel()
-    WelcomeScreen(viewmodel, {}) {}
+    WelcomeScreen(state = UserState(), onEvent = {}, onNextClicked = {}, onLogin = {})
 }

@@ -43,14 +43,15 @@ import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import com.myapp.spendless.R
 import com.myapp.spendless.feature.HomeScreen.presentation.component.ButtomError
+import com.myapp.spendless.feature.Registration.presentation.state.UserState
+import com.myapp.spendless.model.User
 import com.myapp.spendless.ui.theme.Primary
 import com.myapp.spendless.ui.theme.PrimaryFixed
 import kotlinx.coroutines.delay
+import java.util.UUID
 
 @Composable
-fun PinScreen(navController: NavController, viewmodel: UserViewmodel) {
-
-    val state by viewmodel.state.collectAsStateWithLifecycle()
+fun PinScreen(navController: NavController, state: UserState, onEvent:(UserAction)-> Unit) {
 
     var pinCodeList by remember { mutableStateOf<List<String>>(emptyList()) }
     var confirmPinCode by remember { mutableStateOf<String>("") }
@@ -207,9 +208,9 @@ fun PinScreen(navController: NavController, viewmodel: UserViewmodel) {
             ButtomError("PINs don’t match. Try again")
 
         } else {
-            viewmodel.getPin(pinCode)
+            onEvent(UserAction.GetPin(pinCode))
             Log.d("TAG", pinCode)
-            viewmodel.insertUser()
+          onEvent(UserAction.InsertUser)
             navController.navigate("LoginScreen")
         }
     }
@@ -274,8 +275,14 @@ fun PinDelete(onDelete: () -> Unit) {
 @Composable
 fun PinScreenPreview() {
     val navController = rememberNavController()
-    val viewmodel: UserViewmodel = hiltViewModel()
-    PinScreen(navController, viewmodel = viewmodel)
+    PinScreen(navController, state = UserState(
+        user = User(id = UUID.randomUUID(), name = "Harley Fischer", pin = "duis"),
+        isValidUser = false,
+        isExistingUser = false,
+        pinCode = "ligula",
+        isUserIdentify = false
+    ), {}
+    )
 }
 
 @Preview(showBackground = true)

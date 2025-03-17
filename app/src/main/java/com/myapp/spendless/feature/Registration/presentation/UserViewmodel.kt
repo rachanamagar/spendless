@@ -12,6 +12,7 @@ import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
+
 @HiltViewModel
 class UserViewmodel @Inject constructor(
     private val repository: UserRepository,
@@ -21,30 +22,54 @@ class UserViewmodel @Inject constructor(
     private val _uiState = MutableStateFlow(UserState())
     val state: StateFlow<UserState> = _uiState
 
-    fun getUsername(username: String) {
-        _uiState.value = _uiState.value.copy(
-            user = _uiState.value.user.copy(
-                name = username
+
+     fun onAction(action: UserAction) {
+        when (action) {
+            is UserAction.GetUsername -> getUsername(action.username)
+            is UserAction.GetPin -> getPin(action.pin)
+            is UserAction.InsertUser -> insertUser()
+            is UserAction.ValidateUser -> validateUser(action.name, action.pin, action.onResult)
+            is UserAction.LogOutUser -> logOutUser()
+            is UserAction.SaveUserName -> saveUserName(action.userName)
+            is UserAction.GetSessionUserName -> getUsername(action.userName)
+            is UserAction.ExistingUser -> isExistingUser(action.name)
+        }
+    }
+
+    private fun isExistingUser(name: String) {
+        viewModelScope.launch {
+            val result = repository.getAllUser()
+                .first()
+                .any { it.name == name }
+
+            _uiState.value = _uiState.value.copy(
+                isExistingUser = result
             )
+            return@launch
+        }
+    }
+
+
+    private fun getUsername(username: String) {
+        _uiState.value = _uiState.value.copy(
+            user = _uiState.value.user.copy(name = username)
         )
     }
 
-    fun getPin(pin: String) {
+    private fun getPin(pin: String) {
         _uiState.value = _uiState.value.copy(
-            user = _uiState.value.user.copy(
-                pin = pin
-            )
+            user = _uiState.value.user.copy(pin = pin)
         )
     }
-    fun insertUser() {
+
+    private fun insertUser() {
         val newUser = _uiState.value.user
         viewModelScope.launch {
             repository.insertUser(newUser)
         }
     }
 
-
-    fun validateUser(name: String, pin: String, onResult: (Boolean) -> Unit) {
+    private fun validateUser(name: String, pin: String, onResult: (Boolean) -> Unit) {
         viewModelScope.launch {
             val user = repository.getUserByName(name)
             if (user != null && user.pin == pin) {
@@ -56,30 +81,19 @@ class UserViewmodel @Inject constructor(
         }
     }
 
-    suspend fun isExistingUser(name: String): Boolean {
-        val result = repository.getAllUser()
-            .first()
-            .any { it.name == name }
-
-        _uiState.value = _uiState.value.copy(
-            isExistingUser = result
-        )
-        return result
-    }
-
-    fun logOutUser(){
+    fun logOutUser() {
         viewModelScope.launch {
             sessionManager.clearUserSession()
         }
     }
 
-    fun saveUserName(userName: String){
+    private fun saveUserName(userName: String) {
         viewModelScope.launch {
             sessionManager.saveUserName(userName)
         }
     }
 
-    fun getUserName(){
+    fun getUserName() {
         viewModelScope.launch {
             sessionManager.getUserName()
         }
