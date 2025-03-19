@@ -85,6 +85,8 @@ fun PreferenceUI(
                         uiState.priceDisplayConfig.decimalSeparator,
                         uiState.priceDisplayConfig.thousandSeparator
                     )
+                    viewModel.savePreference()
+                    viewModel.saveSymbolPreference(symbol)
                     onSave(symbol)
                     onBack()
                     Log.d("Preferences", "Selected Price Display Config: ${uiState.priceDisplayConfig}")

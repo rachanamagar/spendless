@@ -73,9 +73,11 @@ fun HomeScreen(onSetting: () -> Unit, onCLicked: () -> Unit, onShowAll: () -> Un
 
     val preferencesViewModel: PreferencesViewModel = hiltViewModel()
     val uiPreferences by preferencesViewModel.uiPreferenceState.collectAsStateWithLifecycle()
+    val currency by preferencesViewModel.currencySymbol.collectAsStateWithLifecycle()
 
     LaunchedEffect(Unit) {
         viewModel.getAllTransaction()
+        preferencesViewModel.loadPreference()
     }
 
     Scaffold(
@@ -160,7 +162,7 @@ fun HomeScreen(onSetting: () -> Unit, onCLicked: () -> Unit, onShowAll: () -> Un
                     ) {
 
                         Text(
-                            text = state.symbol,
+                            text = currency ?: state.symbol,
                             fontFamily = FontFamily(Font(R.font.fig_tree_medium)),
                             fontSize = 30.sp,
                             color = Color.White
