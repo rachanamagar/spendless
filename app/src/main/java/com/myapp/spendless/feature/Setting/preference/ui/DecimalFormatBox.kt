@@ -34,7 +34,7 @@ fun DecimalFormatBox(onClick: (DecimalSeparator) -> Unit) {
         Spacer(modifier = Modifier.height(10.dp))
 
         SegmentedButton(
-            list = listOf("1.00", "1,00"),
+            list = listOf("1,00", "1.00"),
             selectedIndex = selectedIndexForFormat,
             onSelectedIndex = { selectedIndexForFormat = it },
             onItemClicked = { indexDecimal ->
