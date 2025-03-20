@@ -19,6 +19,9 @@ import androidx.compose.ui.unit.sp
 import com.myapp.spendless.R
 import com.myapp.spendless.feature.HomeScreen.model.Transaction
 import com.myapp.spendless.feature.HomeScreen.presentation.component.TransactionListItem
+import com.myapp.spendless.feature.HomeScreen.presentation.component.groupByDate
+import java.time.LocalDate
+import java.time.format.DateTimeFormatter
 import java.util.Locale
 import java.util.UUID
 
@@ -26,7 +29,7 @@ import java.util.UUID
 @Composable
 fun TransactionList(list: List<Transaction>) {
 
-    val listToShow = list.groupBy { it.date }
+    val sortedList = list.sortedByDescending { it.date }.groupByDate()
     Column(
         modifier = Modifier
             .fillMaxWidth()
@@ -36,7 +39,7 @@ fun TransactionList(list: List<Transaction>) {
         LazyColumn(
             modifier = Modifier.fillMaxSize()
         ) {
-            listToShow.forEach { (date, transaction) ->
+            sortedList.forEach { (date, transaction) ->
                 item {
                     Text(
                         text = formatDateLabel(date).uppercase(locale = Locale.US),
@@ -50,6 +53,20 @@ fun TransactionList(list: List<Transaction>) {
                 itemsIndexed(transaction) {_, eachTransaction ->
                     TransactionListItem(eachTransaction)
                 }
+            }
+        }
+    }
+}
+
+fun formatDateLabel(date: String): String {
+    return when (date) {
+        "Today", "Yesterday" -> date
+        else -> {
+            try {
+                val parsedDate = LocalDate.parse(date, DateTimeFormatter.ofPattern("yyyy-MM-dd"))
+                parsedDate.format(DateTimeFormatter.ofPattern("MMMM dd"))
+            } catch (e: Exception) {
+                "Invalid Date"
             }
         }
     }

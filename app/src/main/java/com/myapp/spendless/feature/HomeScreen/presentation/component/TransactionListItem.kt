@@ -35,6 +35,11 @@ import com.myapp.spendless.feature.Setting.toExpensesUnit
 import com.myapp.spendless.feature.Setting.toIncomeUnit
 import com.myapp.spendless.ui.theme.PrimaryFixed
 import com.myapp.spendless.ui.theme.SecondaryContainer
+import java.time.Instant
+import java.time.LocalDate
+import java.time.LocalDateTime
+import java.time.ZoneId
+import java.time.format.DateTimeFormatter
 import java.util.UUID
 
 @Composable
@@ -124,4 +129,22 @@ fun ListItemPreview() {
         userId = UUID.randomUUID()
     )
     TransactionListItem(cat)
+}
+
+fun List<Transaction>.groupByDate(): Map<String, List<Transaction>> {
+    val dateFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd")
+    val today = LocalDate.now()
+    val yesterday = today.minusDays(1)
+
+    return this.groupBy { transaction ->
+        val transactionDate = Instant.ofEpochMilli(transaction.date)
+            .atZone(ZoneId.systemDefault())
+            .toLocalDate()
+
+        when (transactionDate) {
+            today -> "Today"
+            yesterday -> "Yesterday"
+            else -> transactionDate.format(dateFormatter)
+        }
+    }
 }
