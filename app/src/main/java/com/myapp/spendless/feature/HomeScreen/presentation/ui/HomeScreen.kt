@@ -329,20 +329,6 @@ fun ButtomRow(list: List<Transaction>, onShowAll: () -> Unit) {
     }
 }
 
-fun formatDateLabel(timestamp: Long): String {
-    val transactionDate = Instant.ofEpochMilli(timestamp)
-        .atZone(ZoneId.systemDefault())
-        .toLocalDate()
-
-    val today = LocalDate.now()
-
-    return when (transactionDate) {
-        today -> "Today"
-        today.minusDays(1) -> "Yesterday"
-        else -> transactionDate.format(DateTimeFormatter.ofPattern("MMMM dd"))
-    }
-}
-
 @Preview(showBackground = true)
 @Composable
 fun ButtomRowPreview() {
