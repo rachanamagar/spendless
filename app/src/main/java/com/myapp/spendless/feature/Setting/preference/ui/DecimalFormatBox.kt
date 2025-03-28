@@ -17,7 +17,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.myapp.spendless.R
-import com.myapp.spendless.feature.Setting.SegmentedButton
+import com.myapp.spendless.feature.Setting.SegmentedAppButton
 import com.myapp.spendless.feature.Setting.preference.model.DecimalSeparator
 
 
@@ -33,7 +33,7 @@ fun DecimalFormatBox(onClick: (DecimalSeparator) -> Unit) {
         )
         Spacer(modifier = Modifier.height(10.dp))
 
-        SegmentedButton(
+        SegmentedAppButton(
             list = listOf("1,00", "1.00"),
             selectedIndex = selectedIndexForFormat,
             onSelectedIndex = { selectedIndexForFormat = it },

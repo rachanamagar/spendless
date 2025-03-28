@@ -15,7 +15,6 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.remember
@@ -31,8 +30,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.myapp.spendless.R
 import com.myapp.spendless.feature.Setting.model.SessionExpiry
 import com.myapp.spendless.feature.HomeScreen.presentation.component.AppButton
-import com.myapp.spendless.feature.Setting.SegmentedButton
-import kotlinx.coroutines.flow.collect
+import com.myapp.spendless.feature.Setting.SegmentedAppButton
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -90,7 +88,7 @@ fun SecurityScreen(onBackPressed: () -> Unit, navigateToLogin:()-> Unit) {
                 modifier = Modifier.padding(start = 10.dp, top = 10.dp)
             )
             Spacer(modifier = Modifier.height(10.dp))
-            SegmentedButton(
+            SegmentedAppButton(
                 list = list,
                 selectedIndex = selectedIndex,
                 onSelectedIndex = { index ->
@@ -106,7 +104,7 @@ fun SecurityScreen(onBackPressed: () -> Unit, navigateToLogin:()-> Unit) {
 
             Text("Locked out duration ", modifier = Modifier.padding(start = 10.dp, top = 10.dp))
             Spacer(modifier = Modifier.height(10.dp))
-            SegmentedButton(lockedOutDurationList,
+            SegmentedAppButton(lockedOutDurationList,
                 lockedSelectedIndex,
                 {}) {
                 lockedSelectedIndex = it

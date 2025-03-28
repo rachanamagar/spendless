@@ -110,6 +110,7 @@ class TransactionViewModel @Inject constructor(
         val transaction = _uiState.value.transaction
         viewModelScope.launch {
             val userID = sessionManager.getUserSession().firstOrNull() ?: return@launch
+
             repository.insertTransaction(transaction, userID)
         }
     }
@@ -185,6 +186,9 @@ class TransactionViewModel @Inject constructor(
         }
     }
 
+    fun resetState(){
+        _uiState.value = TransactionState()
+    }
     fun changeFormat(amount: String) {
         val cleanedAmount = amount.replace(Regex("[^\\d.]"), "")
         val amountAsDouble = cleanedAmount.toDoubleOrNull() ?: 0.0

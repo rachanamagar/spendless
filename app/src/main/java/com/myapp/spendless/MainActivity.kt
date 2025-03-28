@@ -83,7 +83,7 @@ class MainActivity : ComponentActivity() {
 
                         composable("LoginScreen") { entry ->
                             val pin = entry.savedStateHandle.get<String>("pinCode") ?: "Pin"
-                            LoginScreen(navController, pin) {
+                            LoginScreen(navController, pin, viewModelTransaction) {
                                 navController.navigate("HomeScreen")
                             }
                         }
@@ -113,13 +113,7 @@ class MainActivity : ComponentActivity() {
                         }
 
                         composable("newTransactionScreen") {
-                            val viewModel: TransactionViewModel = hiltViewModel()
-                            NewTransaction(
-                                onCreateClicked = {
-                                    viewModel.insertTransaction()
-                                    navController.popBackStack()
-                                }
-                            ) {
+                            NewTransaction() {
                                 navController.popBackStack()
                             }
                         }
