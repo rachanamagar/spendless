@@ -1,9 +1,12 @@
 package com.myapp.spendless.feature.HomeScreen.presentation.viewmodel
 
+import android.icu.util.LocaleData
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.myapp.spendless.feature.HomeScreen.model.TransactionRepository
 import com.myapp.spendless.feature.HomeScreen.presentation.component.TransactionEvent
+import com.myapp.spendless.feature.HomeScreen.presentation.component.toDateFormat
 import com.myapp.spendless.feature.HomeScreen.presentation.state.TransactionState
 import com.myapp.spendless.util.DataStoreManager
 import com.myapp.spendless.util.SessionManager
@@ -14,12 +17,19 @@ import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.catch
+import kotlinx.coroutines.flow.filter
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
+import java.time.LocalDate
+import java.util.Locale
+import java.util.concurrent.TimeUnit
 import javax.inject.Inject
+import kotlin.math.abs
 
 @HiltViewModel
 class TransactionViewModel @Inject constructor(
@@ -42,6 +52,7 @@ class TransactionViewModel @Inject constructor(
         totalBalance()
         showLargestAmount()
         showFamousCategory()
+        getPreviousWeekTransaction()
     }
 
     fun handleEvent(event: TransactionEvent) {
@@ -100,6 +111,31 @@ class TransactionViewModel @Inject constructor(
         )
     }
 
+    fun getPreviousWeekTransaction() {
+        viewModelScope.launch(Dispatchers.IO) {
+            val userID = sessionManager.getUserSession().firstOrNull() ?: return@launch
+            val getTransaction =
+                repository.getTransaction(userId = userID).firstOrNull() ?: emptyList()
+
+            val currentDate = System.currentTimeMillis()
+            val oneWeekAgoDate = currentDate - TimeUnit.DAYS.toMillis(7)
+
+            val sortedList = getTransaction.filter {
+                it.date < oneWeekAgoDate
+            }
+            val totalIncome = sortedList.filter { it.category =="Income" }.sumOf { it.amount }
+            val totalExpense = sortedList.filter { it.category != "Income" }.sumOf { it.amount }
+
+            val totalAmount = totalIncome - totalExpense
+
+            withContext(Dispatchers.Main) {
+                _uiState.value = _uiState.value.copy(
+                    lastWeek = abs(totalAmount)
+                )
+            }
+        }
+    }
+
     fun insertTransaction() {
         val date = System.currentTimeMillis()
         _uiState.value = _uiState.value.copy(
@@ -150,6 +186,7 @@ class TransactionViewModel @Inject constructor(
             val userId = sessionManager.getUserSession().firstOrNull() ?: return@launch
             repository.getTransaction(userId).collect { transactions ->
                 val mostFrequentCategory = transactions
+                    .filter { it.category != "Income" }
                     .groupingBy { it.category }
                     .eachCount()
 
@@ -158,7 +195,8 @@ class TransactionViewModel @Inject constructor(
                     .filterValues { it == maxCount }
                     .keys
 
-                _popularCategory.value = if (popularCount.size == 1) popularCount.first() else null
+                _popularCategory.value =
+                    if (popularCount.size == 1) popularCount.first() else null
             }
         }
     }
@@ -186,9 +224,10 @@ class TransactionViewModel @Inject constructor(
         }
     }
 
-    fun resetState(){
+    fun resetState() {
         _uiState.value = TransactionState()
     }
+
     fun changeFormat(amount: String) {
         val cleanedAmount = amount.replace(Regex("[^\\d.]"), "")
         val amountAsDouble = cleanedAmount.toDoubleOrNull() ?: 0.0

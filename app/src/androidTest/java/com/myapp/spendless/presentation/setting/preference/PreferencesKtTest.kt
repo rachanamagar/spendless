@@ -20,7 +20,7 @@ class PreferencesKtTest{
         //Launch
 
         composeTestRule.setContent {
-            SpendlessPreferenceScreen {  }
+            SpendlessPreferenceScreen(onSave = {}) {  }
         }
         //check if currency is displayed
         composeTestRule.onNodeWithText("Currency").isDisplayed()

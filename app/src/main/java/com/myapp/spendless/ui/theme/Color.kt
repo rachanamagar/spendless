@@ -12,6 +12,7 @@ val Pink40 = Color(0xFF7D5260)
 
 val SurfaceBackground = Color(0xFFF6F3F3)
 val Primary = Color(0xFF5A00C8)
+val PrimaryOne = Color(0xFF5900C7)
 val PrimaryContainer = Color(0xFF8138FF)
 val PrimaryFixed = Color(0xFFEADDFF)
 val PrimaryText = Color(0xFF24005A)

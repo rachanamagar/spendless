@@ -31,6 +31,8 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.Font
@@ -47,9 +49,11 @@ import com.myapp.spendless.feature.Setting.formatTotalAmount
 import com.myapp.spendless.feature.Setting.preference.viewModel.PreferencesViewModel
 import com.myapp.spendless.feature.Setting.toExpensesUnit
 import com.myapp.spendless.feature.HomeScreen.presentation.viewmodel.TransactionViewModel
+import com.myapp.spendless.feature.Setting.toDollar
 import com.myapp.spendless.ui.theme.Primary
 import com.myapp.spendless.ui.theme.PrimaryContainer
 import com.myapp.spendless.ui.theme.PrimaryFixed
+import com.myapp.spendless.ui.theme.PrimaryOne
 import com.myapp.spendless.ui.theme.PrimaryText
 import com.myapp.spendless.ui.theme.SecondaryContainer
 import com.myapp.spendless.ui.theme.SecondaryFixed
@@ -58,6 +62,7 @@ import java.time.Instant
 import java.time.LocalDate
 import java.time.ZoneId
 import java.time.format.DateTimeFormatter
+import java.util.Locale
 import java.util.UUID
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -78,48 +83,19 @@ fun HomeScreen(onSetting: () -> Unit, onCLicked: () -> Unit, onShowAll: () -> Un
     LaunchedEffect(Unit) {
         viewModel.getAllTransaction()
         preferencesViewModel.loadPreference()
+        viewModel.getPreviousWeekTransaction()
     }
 
     Scaffold(
         topBar = {
             TopAppBar(
                 title = {
-                    Row(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(horizontal = 20.dp),
-                        horizontalArrangement = Arrangement.SpaceBetween
-                    ) {
-                        Text(
-                            text = userName ?: "Guest",
-                            color = Color.White,
-                            fontSize = 20.sp,
-                            fontFamily = FontFamily(Font(R.font.fig_tree_semi_bold))
-                        )
-
-                        Box(
-                            modifier = Modifier
-                                .height(30.dp)
-                                .width(30.dp)
-                                .clip(RoundedCornerShape(6.dp))
-                                .background(PrimaryFixed.copy(alpha = 0.5f))
-                                .clickable { onSetting() },
-                            contentAlignment = Alignment.Center
-                        ) {
-                            Icon(
-                                painter = painterResource(R.drawable.setting),
-                                contentDescription = null,
-                                tint = Color.White,
-                                modifier = Modifier
-                                    .size(20.dp)
-                                    .padding(2.dp)
-                            )
-                        }
+                    AppTopBar(userName ?: "Guest") {
+                        onSetting()
                     }
-
                 },
                 colors = TopAppBarDefaults.topAppBarColors(
-                    containerColor = Primary
+                    containerColor = Color.Transparent
                 )
             )
         },
@@ -136,7 +112,13 @@ fun HomeScreen(onSetting: () -> Unit, onCLicked: () -> Unit, onShowAll: () -> Un
         Column(
             modifier = Modifier
                 .fillMaxSize()
-                .background(Primary)
+                .background(
+                    brush = Brush.linearGradient(
+                        colors = listOf(PrimaryOne, PrimaryText),
+                        start = Offset(0f, 0f),
+                        end = Offset(1000f, 1000f)
+                    )
+                )
                 .padding(paddingValues)
         ) {
             Box(
@@ -170,7 +152,7 @@ fun HomeScreen(onSetting: () -> Unit, onCLicked: () -> Unit, onShowAll: () -> Un
 
                         Text(
                             formatTotalAmount(
-                                state.totalAmount.toString(),
+                                state.totalAmount.formatToTwoDecimal(),
                                 priceDisplayConfig = uiPreferences.priceDisplayConfig,
                             ),
                             fontSize = 45.sp,
@@ -223,37 +205,7 @@ fun HomeScreen(onSetting: () -> Unit, onCLicked: () -> Unit, onShowAll: () -> Un
                 }
 
                 Spacer(modifier = Modifier.width(8.dp))
-
-                Box(
-                    modifier = Modifier
-                        .height(72.dp)
-                        .width(132.dp)
-                ) {
-                    Column(
-                        modifier = Modifier
-                            .fillMaxSize()
-                            .background(SecondaryFixed, shape = RoundedCornerShape(16.dp))
-                            .padding(16.dp),
-                        verticalArrangement = Arrangement.Center,
-                    ) {
-
-                        Text(
-                            text = if (state.transactionList.isNotEmpty()) state.lastWeek.toString()
-                                .toExpensesUnit(
-                                    Color.Black
-                                ).toString() else "0.0",
-                            fontSize = 20.sp,
-                            color = Color.Black,
-                            fontFamily = FontFamily(Font(R.font.fig_tree_medium)),
-                        )
-                        Text(
-                            "Previous week",
-                            fontSize = 12.sp,
-                            color = Color.Black,
-                            fontFamily = FontFamily(Font(R.font.fig_tree_medium)),
-                        )
-                    }
-                }
+                PreviousWeekTransaction(state.lastWeek.formatToTwoDecimal().toDollar())
             }
             ButtomRow(
                 list = list
@@ -377,6 +329,16 @@ fun ButtomRowPreview() {
     ) {}
 }
 
+fun Double.formatCurrency(): String {
+    val absValue = kotlin.math.abs(this)
+    val formattedValue = String.format(Locale.US, "%.2f", absValue)
+
+    return if (this < 0) "- $${formattedValue}" else "$${formattedValue}"
+}
+
+fun Double.formatToTwoDecimal(): String {
+    return String.format(Locale.US, "%.2f", this)
+}
 @Preview(showBackground = true)
 @Composable
 fun HomeScreenPreview() {
