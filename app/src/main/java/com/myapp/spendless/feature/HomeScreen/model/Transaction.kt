@@ -28,4 +28,5 @@ val categories = listOf(
     Categories( "Transport", R.drawable.transport),
     Categories( "Personal Care", R.drawable.personalcare),
     Categories( "Home", R.drawable.home),
+    Categories( "Income", R.drawable.income),
 )

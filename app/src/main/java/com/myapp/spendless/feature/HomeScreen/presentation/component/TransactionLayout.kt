@@ -15,6 +15,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -45,15 +46,16 @@ fun TransactionLayout(transaction: Transaction) {
         ) {
             Text(
                 text = transaction.title,
-                fontSize = 20.sp,
+                fontSize = if (transaction.title.length > 12) 14.sp else 18.sp,
                 color = Color.Black,
                 fontFamily = FontFamily(Font(R.font.fig_tree_medium)),
             )
 
             Text(
                 text = transaction.amount.toString().toDollar(),
-                fontSize = 20.sp,
+                fontSize = 18.sp,
                 color = Color.Black,
+                textAlign = TextAlign.Start,
                 fontFamily = FontFamily(Font(R.font.fig_tree_medium)),
             )
         }
@@ -74,6 +76,7 @@ fun TransactionLayout(transaction: Transaction) {
                 text = transaction.date.toDateFormat(),
                 fontSize = 10.sp,
                 color = Color.Gray,
+                textAlign = TextAlign.Start,
                 fontFamily = FontFamily(Font(R.font.fig_tree_medium)),
             )
         }
