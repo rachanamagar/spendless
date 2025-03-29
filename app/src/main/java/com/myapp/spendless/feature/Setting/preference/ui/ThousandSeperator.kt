@@ -16,7 +16,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.myapp.spendless.R
-import com.myapp.spendless.feature.Setting.SegmentedButton
+import com.myapp.spendless.feature.Setting.SegmentedAppButton
 import com.myapp.spendless.feature.Setting.preference.model.ThousandSeparator
 
 @Composable
@@ -32,7 +32,7 @@ fun ThousandSeperatorBox(onClick: (ThousandSeparator) -> Unit) {
             fontSize = 12.sp
         )
         Spacer(modifier = Modifier.height(10.dp))
-        SegmentedButton(
+        SegmentedAppButton(
             list = listOf("1,000", "1.000", "1 000"),
             selectedIndex = selectedIndexForFormat,
             { selectedIndexForFormat = it }) { indexThousands ->
