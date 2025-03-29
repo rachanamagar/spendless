@@ -132,14 +132,6 @@ class TransactionViewModel @Inject constructor(
                 _uiState.value = _uiState.value.copy(
                     lastWeek = abs(totalAmount)
                 )
-                Log.d("Transactions", "Total transactions: ${getTransaction.size}")
-                Log.d("Transactions", "Current date: ${currentDate.toDateFormat()}")
-                Log.d("Transactions", "One week ago: ${oneWeekAgoDate.toDateFormat()}")
-                Log.d("Transactions", "Filtered transactions: ${sortedList.size}")
-                sortedList.forEach {
-                    Log.d("Transactions", "Transaction date: ${it.date.toDateFormat()}, amount: ${it.amount}")
-                }
-                Log.d("Transactions", "Total amount: ${_uiState.value.lastWeek}")
             }
         }
     }
