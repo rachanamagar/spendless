@@ -1,12 +1,10 @@
 package com.myapp.spendless.presentation.setting.preference
 
 import androidx.compose.ui.test.isDisplayed
-import androidx.compose.ui.test.junit4.createAndroidComposeRule
 import androidx.compose.ui.test.junit4.createComposeRule
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
-import com.myapp.spendless.MainActivity
-import com.myapp.spendless.feature.Setting.preference.SpendlessPreferenceScreen
+import com.myapp.spendless.feature.Setting.preference.ui.SpendLessPreferenceScreen
 import org.junit.Rule
 import org.junit.Test
 
@@ -20,7 +18,7 @@ class PreferencesKtTest{
         //Launch
 
         composeTestRule.setContent {
-            SpendlessPreferenceScreen(onSave = {}) {  }
+            SpendLessPreferenceScreen(onSave = {}) {  }
         }
         //check if currency is displayed
         composeTestRule.onNodeWithText("Currency").isDisplayed()

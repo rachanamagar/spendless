@@ -53,7 +53,7 @@ fun TransactionLayout(transaction: Transaction) {
 
             Text(
                 text = transaction.amount.toString().toDollar(),
-                fontSize = 18.sp,
+                fontSize = 16.sp,
                 color = Color.Black,
                 textAlign = TextAlign.Start,
                 fontFamily = FontFamily(Font(R.font.fig_tree_medium)),

@@ -1,4 +1,4 @@
-package com.myapp.spendless.feature.Setting.preference
+package com.myapp.spendless.feature.Setting.preference.ui
 
 import android.util.Log
 import androidx.compose.foundation.clickable
@@ -11,23 +11,25 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.myapp.spendless.R
 import com.myapp.spendless.feature.HomeScreen.presentation.component.AppButton
-import com.myapp.spendless.feature.Setting.preference.ui.DecimalFormatBox
-import com.myapp.spendless.feature.Setting.preference.ui.ExpenseAmountFormat
-import com.myapp.spendless.feature.Setting.preference.ui.ListOfCurrency
-import com.myapp.spendless.feature.Setting.preference.ui.ThousandSeperatorBox
-import com.myapp.spendless.feature.Setting.preference.ui.TotalAmountBox
+import com.myapp.spendless.feature.Setting.preference.model.AmountFormat
+import com.myapp.spendless.feature.Setting.preference.model.DecimalSeparator
+import com.myapp.spendless.feature.Setting.preference.model.PriceDisplayConfig
+import com.myapp.spendless.feature.Setting.preference.model.ThousandSeparator
 import com.myapp.spendless.feature.Setting.preference.viewModel.PreferencesScreenState
 import com.myapp.spendless.feature.Setting.preference.viewModel.PreferencesViewModel
+import com.myapp.spendless.util.DataStoreManager
 
 @Composable
 fun PreferenceUI(
-    paddingValues: PaddingValues,
+   // paddingValues: PaddingValues,
     uiState: PreferencesScreenState,
     viewModel: PreferencesViewModel,
     selectedCurrency: String,
@@ -44,7 +46,7 @@ fun PreferenceUI(
     Column(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(paddingValues)
+           // .padding(paddingValues)
             .padding(20.dp)
     ) {
         TotalAmountBox(uiState.displayTotalAmount, symbol)
@@ -95,5 +97,29 @@ fun PreferenceUI(
         )
 
     }
+}
+
+@Preview(showBackground = true)
+@Composable
+fun PreferneceUIPreview(){
+    val context = LocalContext.current
+    PreferenceUI(
+        uiState = PreferencesScreenState(
+            priceDisplayConfig = PriceDisplayConfig(
+                amountFormat = AmountFormat.WithBrackets,
+                decimalSeparator = DecimalSeparator.Dot,
+                thousandSeparator = ThousandSeparator.Comma
+            ), displayTotalAmount = "10000"
+        ),
+        viewModel = PreferencesViewModel(
+            dataStoreManager = DataStoreManager(context =  context)
+        ),
+        selectedCurrency = "US dollar",
+        onSelected = {},
+        expanded = false,
+        symbol = "$",
+        onSymbol = {},
+        onExpanded = {},
+        onBack = {}) { }
 }
 

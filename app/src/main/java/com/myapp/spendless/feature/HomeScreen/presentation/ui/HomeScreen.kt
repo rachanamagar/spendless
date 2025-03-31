@@ -58,6 +58,7 @@ import com.myapp.spendless.ui.theme.PrimaryText
 import com.myapp.spendless.ui.theme.SecondaryContainer
 import com.myapp.spendless.ui.theme.SecondaryFixed
 import com.myapp.spendless.ui.theme.SurfaceBackground
+import java.text.NumberFormat
 import java.time.Instant
 import java.time.LocalDate
 import java.time.ZoneId
@@ -83,7 +84,9 @@ fun HomeScreen(onSetting: () -> Unit, onCLicked: () -> Unit, onShowAll: () -> Un
     LaunchedEffect(Unit) {
         viewModel.getAllTransaction()
         preferencesViewModel.loadPreference()
+        preferencesViewModel.savePreference()
         viewModel.getPreviousWeekTransaction()
+
     }
 
     Scaffold(
@@ -337,7 +340,12 @@ fun Double.formatCurrency(): String {
 }
 
 fun Double.formatToTwoDecimal(): String {
-    return String.format(Locale.US, "%.2f", this)
+    val formatter = NumberFormat.getNumberInstance(Locale.US).apply {
+        minimumFractionDigits = 2
+        maximumFractionDigits = 2
+        isGroupingUsed = true
+    }
+    return formatter.format(this)
 }
 @Preview(showBackground = true)
 @Composable

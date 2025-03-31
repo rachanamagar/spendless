@@ -1,6 +1,8 @@
-package com.myapp.spendless.feature.Setting.preference
+package com.myapp.spendless.feature.Setting.preference.ui
 
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -24,7 +26,7 @@ import com.myapp.spendless.feature.Setting.preference.viewModel.PreferencesViewM
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun SpendlessPreferenceScreen(onSave:(String)-> Unit, onBackPressed: () -> Unit) {
+fun SpendLessPreferenceScreen(onSave:(String)-> Unit, onBackPressed: () -> Unit) {
 
     val viewModel: PreferencesViewModel = hiltViewModel()
     val uiState by viewModel.uiPreferenceState.collectAsStateWithLifecycle()
@@ -50,18 +52,21 @@ fun SpendlessPreferenceScreen(onSave:(String)-> Unit, onBackPressed: () -> Unit)
             )
         }
     ) { paddingValues ->
-        PreferenceUI(
-            paddingValues,
-            uiState,
-            viewModel,
-            selectedCurrency = selectedCurrency,
-            onSelected = { selectedCurrency = it },
-            expanded = expanded,
-            onExpanded = { expanded = it },
-            onBack = { onBackPressed() },
-            symbol = symbol,
-            onSymbol = { symbol = it},
-            onSave = { onSave(symbol)}
-        )
+
+        Box(modifier = Modifier.padding(paddingValues)) {
+            PreferenceUI(
+                //  paddingValues,
+                uiState,
+                viewModel,
+                selectedCurrency = selectedCurrency,
+                onSelected = { selectedCurrency = it },
+                expanded = expanded,
+                onExpanded = { expanded = it },
+                onBack = { onBackPressed() },
+                symbol = symbol,
+                onSymbol = { symbol = it },
+                onSave = { onSave(symbol) }
+            )
+        }
     }
 }
