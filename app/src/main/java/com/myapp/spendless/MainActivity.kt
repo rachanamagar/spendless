@@ -31,7 +31,7 @@ import com.myapp.spendless.feature.Registration.presentation.PinScreen
 import com.myapp.spendless.feature.Registration.presentation.UserViewmodel
 import com.myapp.spendless.feature.Registration.presentation.WelcomeScreen
 import com.myapp.spendless.feature.Setting.SettingScreen
-import com.myapp.spendless.feature.Setting.preference.SpendlessPreferenceScreen
+import com.myapp.spendless.feature.Setting.preference.ui.SpendLessPreferenceScreen
 import com.myapp.spendless.feature.Setting.security.SecurityScreen
 import com.myapp.spendless.feature.Setting.security.SessionViewModel
 import com.myapp.spendless.ui.theme.SpendlessTheme
@@ -142,7 +142,7 @@ class MainActivity : ComponentActivity() {
                         }
 
                         composable("preferences") {
-                            SpendlessPreferenceScreen(
+                            SpendLessPreferenceScreen(
                                 onSave = { viewModelTransaction.changeSymbol(it) },
                             )
                             { navController.popBackStack() }
