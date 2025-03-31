@@ -1,4 +1,4 @@
-package com.myapp.spendless.feature.Setting.presentation
+package com.myapp.spendless.feature.Setting.security
 
 import com.myapp.spendless.feature.Setting.model.Duration
 import com.myapp.spendless.feature.Setting.model.SessionExpiry

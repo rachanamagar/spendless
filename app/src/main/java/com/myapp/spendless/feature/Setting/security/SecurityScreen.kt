@@ -1,4 +1,4 @@
-package com.myapp.spendless.feature.Setting.presentation
+package com.myapp.spendless.feature.Setting.security
 
 import android.util.Log
 import androidx.compose.foundation.clickable
@@ -34,9 +34,9 @@ import com.myapp.spendless.feature.Setting.SegmentedAppButton
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun SecurityScreen(onBackPressed: () -> Unit, navigateToLogin:()-> Unit) {
+fun SecurityScreen(onBackPressed: () -> Unit, viewModel: SessionViewModel) {
 
-    val viewModel: SessionViewModel = hiltViewModel()
+
     val state by viewModel.sessionState.collectAsStateWithLifecycle()
 
     val list = listOf("5 min", "15 min", "30 min", "1 hour")
@@ -123,5 +123,5 @@ fun SecurityScreen(onBackPressed: () -> Unit, navigateToLogin:()-> Unit) {
 @Preview(showBackground = true)
 @Composable
 fun SecurityScreenPreview() {
-    SecurityScreen({}){}
+    SecurityScreen({}, hiltViewModel())
 }
