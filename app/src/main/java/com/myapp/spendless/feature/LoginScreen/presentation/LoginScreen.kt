@@ -50,6 +50,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import com.myapp.spendless.R
+import com.myapp.spendless.feature.HomeScreen.presentation.component.ButtomError
 import com.myapp.spendless.feature.HomeScreen.presentation.viewmodel.TransactionViewModel
 import com.myapp.spendless.ui.theme.BackgroundBlack
 import com.myapp.spendless.ui.theme.Primary
@@ -66,6 +67,7 @@ fun LoginScreen(
     var text by remember { mutableStateOf("") }
     val focusManager = LocalFocusManager.current
     val focusRequester = remember { FocusRequester() }
+    var showError by remember { mutableStateOf(false) }
 
     val username by viewModel.userName.collectAsStateWithLifecycle(initialValue = null)
 
@@ -83,7 +85,7 @@ fun LoginScreen(
             modifier = Modifier
                 .fillMaxWidth()
                 .fillMaxHeight()
-                .padding(top = 100.dp),
+                .padding(top = 100.dp, start = 20.dp, end = 20.dp),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
 
@@ -118,14 +120,19 @@ fun LoginScreen(
                 value = text,
                 onValueChange = { newText ->
                     text = newText
-
                 },
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .background(Color.White, RoundedCornerShape(16.dp))
+                    .align(Alignment.CenterHorizontally)
+                    .focusRequester(focusRequester),
                 colors = OutlinedTextFieldDefaults.colors(
-                    unfocusedContainerColor = BackgroundBlack.copy(alpha = 0.1f),
-                    focusedContainerColor = BackgroundBlack.copy(alpha = 0.1f),
+                    unfocusedContainerColor = Color.White,
+                    focusedContainerColor = Color.White,
                     unfocusedBorderColor = Color.Transparent,
-                    focusedBorderColor = Color.Transparent
+                    focusedBorderColor = Primary
                 ),
+                shape = RoundedCornerShape(16.dp),
                 textStyle = TextStyle(
                     textAlign = TextAlign.Center,
                     color = Color.Gray,
@@ -154,13 +161,6 @@ fun LoginScreen(
                         textAlign = TextAlign.Center
                     )
                 },
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .align(Alignment.CenterHorizontally)
-                    .padding(horizontal = 20.dp)
-                    .clip(RoundedCornerShape(16.dp))
-                    .focusRequester(focusRequester)
-
             )
 
             Spacer(modifier = Modifier.height(8.dp))
@@ -168,23 +168,24 @@ fun LoginScreen(
 
             Box(
                 modifier = Modifier
-                    .padding(horizontal = 20.dp)
                     .fillMaxWidth()
-                    .background(BackgroundBlack.copy(alpha = 0.1f), RoundedCornerShape(16.dp))
-                    .padding(20.dp)
-                    .clickable { navController.navigate("PinLoginScreen/$text") }) {
+                    .background(Color.White, RoundedCornerShape(16.dp))
+                    .padding(horizontal = 20.dp, vertical = 15.dp)
+                    .clickable {
+                        if (text.isEmpty()) {
+                            showError = true
+                        } else {
+                            showError = false
+                            navController.navigate("PinLoginScreen/$text")
+                        }
+                    }
+            ) {
                 pin?.let {
                     Row(
                         horizontalArrangement = Arrangement.spacedBy(8.dp),
                         verticalAlignment = Alignment.CenterVertically
                     ) {
-                        for (i in pin.indices) {
-                            Box(
-                                modifier = Modifier
-                                    .size(10.dp)
-                                    .background(Color.Gray, CircleShape)
-                            )
-                        }
+                        Text(text = "PIN", color = Color.Gray, fontSize = 16.sp)
                     }
                 }
             }
@@ -193,7 +194,6 @@ fun LoginScreen(
 
             Button(
                 onClick = {
-
                     onLoginClicked()
                     Log.d("TAG", text)
                 },
@@ -213,7 +213,7 @@ fun LoginScreen(
                     modifier = Modifier.padding(8.dp)
                 )
             }
-            Spacer(modifier = Modifier.height(6.dp))
+            Spacer(modifier = Modifier.height(16.dp))
 
             Text(
                 text = "New to SpendLess ?",
@@ -225,6 +225,10 @@ fun LoginScreen(
                     .clickable { navController.navigate("WelcomeScreen") }
             )
         }
+
+        if (showError) {
+            ButtomError("Enter Username first.")
+        }
     }
 }
 
@@ -233,6 +237,6 @@ fun LoginScreen(
 @Composable
 fun LoginScreenPreview() {
     val navController = rememberNavController()
-   // LoginScreen(navController = navController,, pin = "123") { }
+    // LoginScreen(navController = navController,, pin = "123") { }
 }
 

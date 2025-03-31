@@ -13,7 +13,9 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material3.Icon
@@ -41,6 +43,7 @@ import com.myapp.spendless.feature.Registration.presentation.PinDelete
 import com.myapp.spendless.feature.Registration.presentation.PinNumber
 import com.myapp.spendless.feature.Registration.presentation.UserAction
 import com.myapp.spendless.feature.Registration.presentation.UserViewmodel
+import com.myapp.spendless.ui.theme.Error
 import com.myapp.spendless.ui.theme.Primary
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
@@ -73,7 +76,8 @@ fun PinLoginScreen(name: String, navController: NavController) {
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(),
-            verticalAlignment = Alignment.CenterVertically
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.SpaceBetween
         ) {
             Icon(
                 imageVector = Icons.Default.ArrowBack,
@@ -83,6 +87,22 @@ fun PinLoginScreen(name: String, navController: NavController) {
                     .size(24.dp)
                     .clickable { navController.popBackStack() }
             )
+
+            Box(
+                modifier = Modifier
+                    .width(44.dp)
+                    .height(44.dp)
+                    .background(Error.copy(alpha = 0.08f), RoundedCornerShape(8.dp))
+                    .padding(4.dp),
+                contentAlignment = Alignment.Center
+            ) {
+                Icon(
+                    painter = painterResource(R.drawable.logout),
+                    contentDescription = null,
+                    tint = Error,
+                    modifier = Modifier.size(20.dp).clickable { navController.navigate("LoginScreen") }
+                )
+            }
         }
 
         Icon(
@@ -174,7 +194,7 @@ fun PinLoginScreen(name: String, navController: NavController) {
 
             try {
                 withContext(Dispatchers.IO) {
-                    viewmodel.onAction(UserAction.ValidateUser(name, pinCode){ isValid ->
+                    viewmodel.onAction(UserAction.ValidateUser(name, pinCode) { isValid ->
                         coroutineScope.launch {
                             if (isValid) {
                                 viewmodel.onAction(UserAction.SaveUserName(name))
@@ -182,7 +202,7 @@ fun PinLoginScreen(name: String, navController: NavController) {
                                     ?.savedStateHandle
                                     ?.set("pinCode", pinCode)
                                 delay(100)
-                                navController.popBackStack()
+                               // navController.popBackStack()
                             } else {
                                 showError = true
                                 delay(1000)
@@ -204,7 +224,7 @@ fun PinLoginScreen(name: String, navController: NavController) {
             }
         }
     }
-    if (showError){
+    if (showError) {
         ButtomError("Wrong Pin")
     }
 }

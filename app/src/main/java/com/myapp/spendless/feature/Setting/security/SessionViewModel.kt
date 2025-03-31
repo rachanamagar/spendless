@@ -1,4 +1,4 @@
-package com.myapp.spendless.feature.Setting.presentation
+package com.myapp.spendless.feature.Setting.security
 
 import android.util.Log
 import androidx.lifecycle.ViewModel
@@ -10,6 +10,7 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -24,7 +25,7 @@ class SessionViewModel @Inject constructor(
     fun setSessionExpiry(duration: SessionExpiry) {
 
         val expiryTime = when (duration) {
-            SessionExpiry.FirstDuration -> 1 * 60 * 1000L
+            SessionExpiry.FirstDuration -> 20 * 1000L
             SessionExpiry.FourthDuration -> 2 * 60 * 1000L
             SessionExpiry.SecondDuration -> 33 * 60 * 1000L
             SessionExpiry.ThirdDuration -> 60 * 60 * 1000L
@@ -35,9 +36,7 @@ class SessionViewModel @Inject constructor(
                 expiryDuration = Duration(duration = duration)
             )
             delay(expiryTime)
-            _sessionState.value = _sessionState.value.copy(
-                isSessionExpire = true
-            )
+            _sessionState.update { it.copy(isSessionExpire = true) }
             Log.d("SessionViewModel", "User session expired after $expiryTime ms")
         }
     }

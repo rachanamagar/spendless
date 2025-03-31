@@ -32,8 +32,8 @@ import com.myapp.spendless.feature.Registration.presentation.UserViewmodel
 import com.myapp.spendless.feature.Registration.presentation.WelcomeScreen
 import com.myapp.spendless.feature.Setting.SettingScreen
 import com.myapp.spendless.feature.Setting.preference.SpendlessPreferenceScreen
-import com.myapp.spendless.feature.Setting.presentation.SecurityScreen
-import com.myapp.spendless.feature.Setting.presentation.SessionViewModel
+import com.myapp.spendless.feature.Setting.security.SecurityScreen
+import com.myapp.spendless.feature.Setting.security.SessionViewModel
 import com.myapp.spendless.ui.theme.SpendlessTheme
 import com.myapp.spendless.ui.theme.SurfaceBackground
 import dagger.hilt.android.AndroidEntryPoint
@@ -71,14 +71,14 @@ class MainActivity : ComponentActivity() {
 
                         composable("WelcomeScreen") {
                             WelcomeScreen(
-                               userState, onEvent = viewmodel::onAction,
+                                userState, onEvent = viewmodel::onAction,
                                 { navController.navigate("PinScreen") },
                                 { navController.navigate("LoginScreen") })
                         }
 
                         composable("PinScreen") {
 
-                            PinScreen(navController, state = userState, viewmodel::onAction )
+                            PinScreen(navController, state = userState, viewmodel::onAction)
                         }
 
                         composable("LoginScreen") { entry ->
@@ -105,7 +105,7 @@ class MainActivity : ComponentActivity() {
                         ) {
                             HomeScreen(
                                 { navController.navigate("settings") },
-                                {navController.navigate("newTransactionScreen")}
+                                { navController.navigate("newTransactionScreen") }
                             ) {
                                 navController.navigate("AllTransaction")
 
@@ -135,22 +135,24 @@ class MainActivity : ComponentActivity() {
                         }
 
                         composable("security") {
-                            SecurityScreen({ navController.popBackStack() }){
-                                navController.navigate("LoginScreen")
-                            }
+                            SecurityScreen(
+                                onBackPressed = { navController.popBackStack() },
+                                viewModel = viewModelSession
+                            )
                         }
 
                         composable("preferences") {
                             SpendlessPreferenceScreen(
                                 onSave = { viewModelTransaction.changeSymbol(it) },
                             )
-                            { navController.navigate("HomeScreen") }
+                            { navController.popBackStack() }
                         }
                     }
                 }
             }
         }
     }
+
     override fun onResume() {
         super.onResume()
         Log.d("MainActivity", "onResume called - Activity in foreground")

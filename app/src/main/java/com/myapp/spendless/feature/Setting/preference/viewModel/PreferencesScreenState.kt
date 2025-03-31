@@ -7,8 +7,8 @@ import com.myapp.spendless.feature.Setting.preference.model.ThousandSeparator
 
 data class PreferencesScreenState(
     val priceDisplayConfig: PriceDisplayConfig = PriceDisplayConfig(
-        amountFormat = AmountFormat.WithoutBrackets,
-        decimalSeparator = DecimalSeparator.Comma,
+        amountFormat = AmountFormat.WithBrackets,
+        decimalSeparator = DecimalSeparator.Dot,
         thousandSeparator = ThousandSeparator.Comma
     ),
     val displayTotalAmount: String = "0"

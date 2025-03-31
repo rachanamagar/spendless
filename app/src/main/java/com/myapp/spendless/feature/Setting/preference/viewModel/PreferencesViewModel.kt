@@ -28,15 +28,7 @@ class PreferencesViewModel @Inject constructor(
     private val dataStoreManager: DataStoreManager
 ) : ViewModel() {
 
-    private val _uiPreferenceState = MutableStateFlow(
-        PreferencesScreenState(
-            priceDisplayConfig = PriceDisplayConfig(
-                amountFormat = AmountFormat.WithBrackets,
-                decimalSeparator = DecimalSeparator.Comma,
-                thousandSeparator = ThousandSeparator.Comma
-            )
-        )
-    )
+    private val _uiPreferenceState = MutableStateFlow(PreferencesScreenState())
     val uiPreferenceState: StateFlow<PreferencesScreenState> = _uiPreferenceState
 
     private val _currencySymbol = MutableStateFlow<String?>(null)
