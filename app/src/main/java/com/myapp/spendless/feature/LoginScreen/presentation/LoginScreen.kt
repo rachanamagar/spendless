@@ -55,6 +55,7 @@ import com.myapp.spendless.feature.HomeScreen.presentation.viewmodel.Transaction
 import com.myapp.spendless.ui.theme.BackgroundBlack
 import com.myapp.spendless.ui.theme.Primary
 import com.myapp.spendless.util.SessionManager
+import kotlinx.coroutines.delay
 
 @Composable
 fun LoginScreen(
@@ -194,8 +195,12 @@ fun LoginScreen(
 
             Button(
                 onClick = {
-                    onLoginClicked()
-                    Log.d("TAG", text)
+                    if (text.isEmpty()) {
+                        showError = true
+                    } else {
+                        showError = false
+                        onLoginClicked()
+                    }
                 },
                 colors = ButtonDefaults.buttonColors(
                     containerColor = Primary
@@ -227,7 +232,12 @@ fun LoginScreen(
         }
 
         if (showError) {
-            ButtomError("Enter Username first.")
+            ButtomError("Enter user detail.")
+
+            LaunchedEffect(showError) {
+                delay(3000L)
+                showError = false
+            }
         }
     }
 }
