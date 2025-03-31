@@ -33,8 +33,10 @@ import com.myapp.spendless.R
 import com.myapp.spendless.feature.HomeScreen.model.Transaction
 import com.myapp.spendless.feature.Setting.toExpensesUnit
 import com.myapp.spendless.feature.Setting.toIncomeUnit
+import com.myapp.spendless.ui.theme.Primary
 import com.myapp.spendless.ui.theme.PrimaryFixed
 import com.myapp.spendless.ui.theme.SecondaryContainer
+import com.myapp.spendless.ui.theme.SecondaryFixed
 import java.time.Instant
 import java.time.LocalDate
 import java.time.LocalDateTime
@@ -65,7 +67,7 @@ fun TransactionListItem(transaction: Transaction) {
             Box(
                 modifier = Modifier
                     .weight(1f)
-                    .background(if(transaction.category == "Income") SecondaryContainer.copy(alpha = 0.4f) else PrimaryFixed, RoundedCornerShape(12.dp))
+                    .background(if(transaction.category == "Income") SecondaryContainer.copy(alpha = 0.2f) else PrimaryFixed, RoundedCornerShape(12.dp))
                     .width(44.dp)
                     .height(44.dp)
                     .aspectRatio(1f),
@@ -77,6 +79,18 @@ fun TransactionListItem(transaction: Transaction) {
                     contentDescription = null,
                     modifier = Modifier.size(20.dp)
                 )
+
+                if (isExpanded){
+                    Icon(
+                        painter = painterResource(R.drawable.descriptiveicon),
+                        tint = if(transaction.category == "Income") SecondaryFixed else Primary,
+                        contentDescription = "dragIcon",
+                        modifier = Modifier.size(20.dp)
+                            .align(Alignment.BottomEnd)
+                            .background(Color.White, shape = RoundedCornerShape(6.dp))
+                            .padding(4.dp)
+                    )
+                }
             }
             Spacer(modifier = Modifier.width(8.dp))
             Column(
