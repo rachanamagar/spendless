@@ -1,4 +1,4 @@
-package com.myapp.spendless.feature.HomeScreen.presentation.component
+package com.myapp.spendless.feature.HomeScreen.presentation.state
 
 sealed class TransactionEvent {
     data class updateTitle(val title: String): TransactionEvent()

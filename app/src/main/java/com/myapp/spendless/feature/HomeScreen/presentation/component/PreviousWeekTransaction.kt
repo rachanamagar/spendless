@@ -1,4 +1,4 @@
-package com.myapp.spendless.feature.HomeScreen.presentation.ui
+package com.myapp.spendless.feature.HomeScreen.presentation.component
 
 import android.annotation.SuppressLint
 import androidx.compose.foundation.background
@@ -20,7 +20,6 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.myapp.spendless.R
-import com.myapp.spendless.feature.Setting.toExpensesUnit
 import com.myapp.spendless.ui.theme.SecondaryFixed
 
 @SuppressLint("DefaultLocale")

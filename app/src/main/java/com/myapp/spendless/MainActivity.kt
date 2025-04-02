@@ -21,9 +21,9 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
-import com.myapp.spendless.feature.HomeScreen.presentation.component.NewTransaction
+import com.myapp.spendless.feature.HomeScreen.presentation.ui.NewTransaction
 import com.myapp.spendless.feature.HomeScreen.presentation.ui.HomeScreen
-import com.myapp.spendless.feature.HomeScreen.presentation.ui.ListOfTransaction
+import com.myapp.spendless.feature.HomeScreen.presentation.component.ListOfTransaction
 import com.myapp.spendless.feature.HomeScreen.presentation.viewmodel.TransactionViewModel
 import com.myapp.spendless.feature.LoginScreen.presentation.LoginScreen
 import com.myapp.spendless.feature.LoginScreen.presentation.PinLoginScreen
