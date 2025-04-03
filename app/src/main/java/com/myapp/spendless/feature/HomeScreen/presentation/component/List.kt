@@ -1,4 +1,4 @@
-package com.myapp.spendless.feature.HomeScreen.presentation.ui
+package com.myapp.spendless.feature.HomeScreen.presentation.component
 
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
@@ -18,8 +18,6 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.myapp.spendless.R
 import com.myapp.spendless.feature.HomeScreen.model.Transaction
-import com.myapp.spendless.feature.HomeScreen.presentation.component.TransactionListItem
-import com.myapp.spendless.feature.HomeScreen.presentation.component.groupByDate
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 import java.util.Locale

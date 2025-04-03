@@ -12,7 +12,6 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
@@ -30,7 +29,6 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
@@ -44,25 +42,22 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.myapp.spendless.R
 import com.myapp.spendless.feature.HomeScreen.model.Transaction
+import com.myapp.spendless.feature.HomeScreen.presentation.component.AppTopBar
+import com.myapp.spendless.feature.HomeScreen.presentation.component.HighestTransactionSection
+import com.myapp.spendless.feature.HomeScreen.presentation.component.PreviousWeekTransaction
 import com.myapp.spendless.feature.HomeScreen.presentation.component.TransactionLayout
+import com.myapp.spendless.feature.HomeScreen.presentation.component.TransactionList
 import com.myapp.spendless.feature.Setting.formatTotalAmount
 import com.myapp.spendless.feature.Setting.preference.viewModel.PreferencesViewModel
-import com.myapp.spendless.feature.Setting.toExpensesUnit
 import com.myapp.spendless.feature.HomeScreen.presentation.viewmodel.TransactionViewModel
 import com.myapp.spendless.feature.Setting.toDollar
-import com.myapp.spendless.ui.theme.Primary
 import com.myapp.spendless.ui.theme.PrimaryContainer
 import com.myapp.spendless.ui.theme.PrimaryFixed
 import com.myapp.spendless.ui.theme.PrimaryOne
 import com.myapp.spendless.ui.theme.PrimaryText
 import com.myapp.spendless.ui.theme.SecondaryContainer
-import com.myapp.spendless.ui.theme.SecondaryFixed
 import com.myapp.spendless.ui.theme.SurfaceBackground
 import java.text.NumberFormat
-import java.time.Instant
-import java.time.LocalDate
-import java.time.ZoneId
-import java.time.format.DateTimeFormatter
 import java.util.Locale
 import java.util.UUID
 

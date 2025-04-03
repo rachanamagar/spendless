@@ -1,4 +1,4 @@
-package com.myapp.spendless.feature.HomeScreen.presentation.component
+package com.myapp.spendless.feature.HomeScreen.presentation.ui
 
 import android.widget.Toast
 import androidx.compose.foundation.background
@@ -33,6 +33,9 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import com.myapp.spendless.R
 import com.myapp.spendless.feature.HomeScreen.model.Categories
 import com.myapp.spendless.feature.HomeScreen.model.categories
+import com.myapp.spendless.feature.HomeScreen.presentation.component.ExpenseSegment
+import com.myapp.spendless.feature.HomeScreen.presentation.component.IncomeSegment
+import com.myapp.spendless.feature.HomeScreen.presentation.state.TransactionEvent
 import com.myapp.spendless.feature.HomeScreen.presentation.state.TransactionState
 import com.myapp.spendless.feature.HomeScreen.presentation.viewmodel.TransactionViewModel
 import com.myapp.spendless.feature.Setting.Menu

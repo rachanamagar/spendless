@@ -98,8 +98,8 @@ fun TransactionListItem(transaction: Transaction) {
                     .weight(5f)
                     .padding(4.dp)
             ) {
-                Text(text = transaction.title, fontSize = 16.sp)
-                Text(text = transaction.category, fontSize = 12.sp, color = Color.Gray)
+                Text(text = transaction.title, fontSize = 16.sp,  fontFamily = FontFamily(Font(R.font.fig_tree_medium)))
+                Text(text = transaction.category, fontSize = 12.sp, color = Color.Gray, fontFamily = FontFamily(Font(R.font.fig_tree_medium)))
                 Spacer(modifier = Modifier.height(4.dp))
                 if (isExpanded) {
                     Text(

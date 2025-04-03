@@ -1,4 +1,4 @@
-package com.myapp.spendless.feature.HomeScreen.presentation.ui
+package com.myapp.spendless.feature.HomeScreen.presentation.component
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -25,10 +25,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.myapp.spendless.R
-import com.myapp.spendless.ui.theme.Primary
-import com.myapp.spendless.ui.theme.PrimaryFixed
 import com.myapp.spendless.ui.theme.PrimaryOne
-import com.myapp.spendless.ui.theme.PrimaryText
 
 @Composable
 fun AppTopBar(userName: String, onSetting:()-> Unit){
