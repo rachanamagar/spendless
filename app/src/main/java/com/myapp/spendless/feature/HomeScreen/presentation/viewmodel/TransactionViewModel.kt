@@ -2,6 +2,7 @@ package com.myapp.spendless.feature.HomeScreen.presentation.viewmodel
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.myapp.spendless.feature.HomeScreen.model.Transaction
 import com.myapp.spendless.feature.HomeScreen.model.TransactionRepository
 import com.myapp.spendless.feature.HomeScreen.presentation.state.TransactionEvent
 import com.myapp.spendless.feature.HomeScreen.presentation.state.TransactionState
@@ -9,12 +10,15 @@ import com.myapp.spendless.util.DataStoreManager
 import com.myapp.spendless.util.SessionManager
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.firstOrNull
+import kotlinx.coroutines.flow.flatMapLatest
+import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
@@ -24,6 +28,7 @@ import java.util.concurrent.TimeUnit
 import javax.inject.Inject
 import kotlin.math.abs
 
+@OptIn(ExperimentalCoroutinesApi::class)
 @HiltViewModel
 class TransactionViewModel @Inject constructor(
     private val repository: TransactionRepository,
@@ -39,6 +44,15 @@ class TransactionViewModel @Inject constructor(
 
     val userName: StateFlow<String?> =
         sessionManager.getUserName().stateIn(viewModelScope, SharingStarted.Lazily, null)
+
+    val userTransactionFlow: StateFlow<List<Transaction>> = sessionManager.getUserSession()
+        .map { userId ->
+            userId?.let { repository.getTransaction(it) } ?: flowOf(emptyList())
+        }
+        .flatMapLatest { it }
+        .catch { e -> println(e.localizedMessage ?: "An error occurred.") }
+        .stateIn(viewModelScope, SharingStarted.Eagerly, emptyList())
+
 
     init {
         getAllTransaction()
@@ -59,56 +73,61 @@ class TransactionViewModel @Inject constructor(
     }
 
     private fun updateTitle(title: String) {
-        _uiState.value = _uiState.value.copy(
-            transaction = _uiState.value.transaction.copy(
-                title = title
-            )
-        )
+       _uiState.update {
+           it.copy(transaction = it.transaction.copy(title = title))
+       }
     }
 
     private fun updateNote(note: String) {
-        _uiState.value = _uiState.value.copy(
-            transaction = _uiState.value.transaction.copy(
-                note = note
+        _uiState.update {
+            it.copy(
+                transaction = it.transaction.copy(
+                    note = note
+                )
             )
-        )
+        }
     }
 
     private fun updateAmount(amount: Double) {
-        _uiState.value = _uiState.value.copy(
-            transaction = _uiState.value.transaction.copy(
-                amount = amount
+        _uiState.update {
+            it.copy(
+                transaction = it.transaction.copy(
+                    amount = amount
+                )
             )
-        )
+        }
     }
 
     private fun updateCategory(category: String) {
-        _uiState.value = _uiState.value.copy(
-            transaction = _uiState.value.transaction.copy(
-                category = category
+        _uiState.update {
+            it.copy(
+                transaction = it.transaction.copy(
+                    category = category
+                )
             )
-        )
+        }
     }
 
     private fun updateIcon(icon: Int) {
-        _uiState.value = _uiState.value.copy(
-            transaction = _uiState.value.transaction.copy(
-                icon = icon
+        _uiState.update {
+            it.copy(
+                transaction = it.transaction.copy(
+                    icon = icon
+                )
             )
-        )
+        }
     }
 
     fun changeSymbol(symbol: String) {
-        _uiState.value = _uiState.value.copy(
-            symbol = symbol
-        )
+        _uiState.update {
+            it.copy(symbol = symbol)
+        }
     }
 
     fun getPreviousWeekTransaction() {
         viewModelScope.launch(Dispatchers.IO) {
-            val userID = sessionManager.getUserSession().firstOrNull() ?: return@launch
             val getTransaction =
-                repository.getTransaction(userId = userID).firstOrNull() ?: emptyList()
+                userTransactionFlow.firstOrNull() ?: emptyList()
 
             val currentDate = System.currentTimeMillis()
             val oneWeekAgoDate = currentDate - TimeUnit.DAYS.toMillis(7)
@@ -116,7 +135,7 @@ class TransactionViewModel @Inject constructor(
             val sortedList = getTransaction.filter {
                 it.date < oneWeekAgoDate
             }
-            val totalIncome = sortedList.filter { it.category =="Income" }.sumOf { it.amount }
+            val totalIncome = sortedList.filter { it.category == "Income" }.sumOf { it.amount }
             val totalExpense = sortedList.filter { it.category != "Income" }.sumOf { it.amount }
 
             val totalAmount = totalIncome - totalExpense
@@ -146,9 +165,7 @@ class TransactionViewModel @Inject constructor(
 
     fun getAllTransaction() {
         viewModelScope.launch(Dispatchers.IO) {
-            val userID = sessionManager.getUserSession().firstOrNull() ?: return@launch
-            repository.getTransaction(userID)
-                .catch { e -> println(e.localizedMessage ?: "An error occured.") }
+            userTransactionFlow
                 .collect { list ->
                     _uiState.value = _uiState.value.copy(
                         transactionList = list
@@ -159,13 +176,12 @@ class TransactionViewModel @Inject constructor(
 
     private fun totalBalance() {
         viewModelScope.launch {
-            val userID = sessionManager.getUserSession().firstOrNull() ?: return@launch
-            repository.getTransaction(userID).map { transaction ->
+            userTransactionFlow.map { transaction ->
                 transaction.sumOf {
                     if (it.category == "Income") it.amount else -it.amount
                 }
             }
-                .collect { total ->
+                ?.collect { total ->
                     _uiState.update {
                         it.copy(totalAmount = total)
                     }
@@ -176,8 +192,7 @@ class TransactionViewModel @Inject constructor(
 
     private fun showFamousCategory() {
         viewModelScope.launch {
-            val userId = sessionManager.getUserSession().firstOrNull() ?: return@launch
-            repository.getTransaction(userId).collect { transactions ->
+            userTransactionFlow.collect { transactions ->
                 val mostFrequentCategory = transactions
                     .filter { it.category != "Income" }
                     .groupingBy { it.category }
@@ -196,8 +211,7 @@ class TransactionViewModel @Inject constructor(
 
     private fun showLargestAmount() {
         viewModelScope.launch {
-            val userID = sessionManager.getUserSession().firstOrNull() ?: return@launch
-            repository.getTransaction(userID).collect { transactionList ->
+            userTransactionFlow.collect { transactionList ->
                 val filteredTransaction = transactionList.filter { it.category != "Income" }
                 val largestTransaction = filteredTransaction.maxByOrNull { it.amount }
 
@@ -225,9 +239,9 @@ class TransactionViewModel @Inject constructor(
         val cleanedAmount = amount.replace(Regex("[^\\d.]"), "")
         val amountAsDouble = cleanedAmount.toDoubleOrNull() ?: 0.0
         viewModelScope.launch {
-            _uiState.value = _uiState.value.copy(
-                totalAmount = amountAsDouble
-            )
+            _uiState.update {
+                it.copy(totalAmount = amountAsDouble)
+            }
         }
     }
 }
