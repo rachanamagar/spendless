@@ -87,4 +87,30 @@ dependencies {
     androidTestImplementation (libs.androidx.espresso.contrib)
     androidTestImplementation (libs.ui.test.junit4)
     debugImplementation (libs.ui.test.manifest)
+
+
+    implementation(libs.kotlinx.coroutines.core)
+    implementation(libs.kotlinx.coroutines.android)
+
+    // AndroidX Test Libraries
+    testImplementation(libs.junit)
+    testImplementation(libs.androidx.core.testing)
+    testImplementation(libs.androidx.junit)
+
+    testImplementation(libs.mockk)
+
+    // Coroutines testing
+    testImplementation(libs.kotlinx.coroutines.test)
+
+    // Turbine for Flow testing
+    testImplementation(libs.turbine)
+
+    // Mockito for additional mocking support
+    testImplementation(libs.mockito.core)
+    testImplementation(libs.mockito.inline)
+
+    // AndroidX Test Runner
+    androidTestImplementation(libs.androidx.runner)
+    androidTestImplementation(libs.androidx.core.testing)
+
 }
