@@ -1,9 +1,10 @@
 package com.myapp.spendless.feature.HomeScreen.presentation.viewmodel
 
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
-import com.myapp.spendless.feature.HomeScreen.model.Transaction
-import com.myapp.spendless.feature.HomeScreen.model.TransactionRepository
-import com.myapp.spendless.feature.HomeScreen.presentation.state.TransactionEvent
+import com.myapp.spendless.feature.home.model.Transaction
+import com.myapp.spendless.feature.home.model.TransactionRepository
+import com.myapp.spendless.feature.home.presentation.state.TransactionEvent
+import com.myapp.spendless.feature.home.presentation.viewmodel.TransactionViewModel
 import com.myapp.spendless.util.DataStoreManager
 import com.myapp.spendless.util.SessionManager
 import io.mockk.coEvery

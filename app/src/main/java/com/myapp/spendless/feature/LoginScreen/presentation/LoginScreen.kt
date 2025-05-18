@@ -1,6 +1,5 @@
 package com.myapp.spendless.feature.LoginScreen.presentation
 
-import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -13,7 +12,6 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
@@ -25,7 +23,6 @@ import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -50,11 +47,9 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import com.myapp.spendless.R
-import com.myapp.spendless.feature.HomeScreen.presentation.component.ButtomError
-import com.myapp.spendless.feature.HomeScreen.presentation.viewmodel.TransactionViewModel
-import com.myapp.spendless.ui.theme.BackgroundBlack
+import com.myapp.spendless.feature.home.presentation.component.ButtonError
+import com.myapp.spendless.feature.home.presentation.viewmodel.TransactionViewModel
 import com.myapp.spendless.ui.theme.Primary
-import com.myapp.spendless.util.SessionManager
 import kotlinx.coroutines.delay
 
 @Composable
@@ -232,7 +227,7 @@ fun LoginScreen(
         }
 
         if (showError) {
-            ButtomError("Enter user detail.")
+            ButtonError("Enter user detail.")
 
             LaunchedEffect(showError) {
                 delay(3000L)

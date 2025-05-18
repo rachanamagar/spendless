@@ -38,11 +38,11 @@ import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.myapp.spendless.R
-import com.myapp.spendless.feature.HomeScreen.presentation.component.ButtomError
-import com.myapp.spendless.feature.Registration.presentation.PinDelete
-import com.myapp.spendless.feature.Registration.presentation.PinNumber
-import com.myapp.spendless.feature.Registration.presentation.UserAction
-import com.myapp.spendless.feature.Registration.presentation.UserViewmodel
+import com.myapp.spendless.feature.home.presentation.component.ButtonError
+import com.myapp.spendless.feature.registration.presentation.PinDelete
+import com.myapp.spendless.feature.registration.presentation.PinNumber
+import com.myapp.spendless.feature.registration.presentation.UserAction
+import com.myapp.spendless.feature.registration.presentation.UserViewmodel
 import com.myapp.spendless.ui.theme.Error
 import com.myapp.spendless.ui.theme.Primary
 import kotlinx.coroutines.Dispatchers
@@ -225,6 +225,6 @@ fun PinLoginScreen(name: String, navController: NavController) {
         }
     }
     if (showError) {
-        ButtomError("Wrong Pin")
+        ButtonError("Wrong Pin")
     }
 }

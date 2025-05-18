@@ -21,19 +21,19 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
-import com.myapp.spendless.feature.HomeScreen.presentation.ui.NewTransaction
-import com.myapp.spendless.feature.HomeScreen.presentation.ui.HomeScreen
-import com.myapp.spendless.feature.HomeScreen.presentation.component.ListOfTransaction
-import com.myapp.spendless.feature.HomeScreen.presentation.viewmodel.TransactionViewModel
 import com.myapp.spendless.feature.LoginScreen.presentation.LoginScreen
 import com.myapp.spendless.feature.LoginScreen.presentation.PinLoginScreen
-import com.myapp.spendless.feature.Registration.presentation.PinScreen
-import com.myapp.spendless.feature.Registration.presentation.UserViewmodel
-import com.myapp.spendless.feature.Registration.presentation.WelcomeScreen
+import com.myapp.spendless.feature.registration.presentation.PinScreen
+import com.myapp.spendless.feature.registration.presentation.UserViewmodel
+import com.myapp.spendless.feature.registration.presentation.WelcomeScreen
 import com.myapp.spendless.feature.Setting.SettingScreen
 import com.myapp.spendless.feature.Setting.preference.ui.SpendLessPreferenceScreen
 import com.myapp.spendless.feature.Setting.security.SecurityScreen
 import com.myapp.spendless.feature.Setting.security.SessionViewModel
+import com.myapp.spendless.feature.home.presentation.component.ListOfTransaction
+import com.myapp.spendless.feature.home.presentation.ui.HomeScreen
+import com.myapp.spendless.feature.home.presentation.ui.NewTransaction
+import com.myapp.spendless.feature.home.presentation.viewmodel.TransactionViewModel
 import com.myapp.spendless.ui.theme.SpendlessTheme
 import com.myapp.spendless.ui.theme.SurfaceBackground
 import dagger.hilt.android.AndroidEntryPoint
@@ -66,7 +66,7 @@ class MainActivity : ComponentActivity() {
                     }
                     NavHost(
                         navController = navController,
-                        startDestination = "LoginScreen"
+                        startDestination = "WelcomeScreen"
                     ) {
 
                         composable("WelcomeScreen") {

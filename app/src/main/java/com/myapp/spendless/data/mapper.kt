@@ -2,7 +2,7 @@ package com.myapp.spendless.data
 
 import com.myapp.spendless.data.LocalData.TransactionEntity
 import com.myapp.spendless.data.LocalData.UserEntity
-import com.myapp.spendless.feature.HomeScreen.model.Transaction
+import com.myapp.spendless.feature.home.model.Transaction
 import com.myapp.spendless.model.User
 
 fun UserEntity.toUserModel(): User{
