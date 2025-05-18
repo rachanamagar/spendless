@@ -1,4 +1,4 @@
-package com.myapp.spendless.model
+package com.myapp.spendless.feature.auth.model
 
 import java.util.UUID
 

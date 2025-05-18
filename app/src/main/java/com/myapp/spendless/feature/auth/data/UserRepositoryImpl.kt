@@ -1,10 +1,9 @@
-package com.myapp.spendless.feature.registration.data
+package com.myapp.spendless.feature.auth.data
 
 import com.myapp.spendless.data.LocalData.SpendLessDao
 import com.myapp.spendless.data.toEntity
 import com.myapp.spendless.data.toUserModel
-import com.myapp.spendless.model.User
-import com.myapp.spendless.feature.registration.model.UserRepository
+import com.myapp.spendless.feature.auth.model.User
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 import java.util.UUID

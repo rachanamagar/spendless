@@ -25,7 +25,6 @@ import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -66,10 +65,11 @@ import java.util.UUID
 fun HomeScreen(onSetting: () -> Unit, onCLicked: () -> Unit, onShowAll: () -> Unit) {
 
     val viewModel: TransactionViewModel = hiltViewModel()
-    val state by viewModel.uiState.collectAsState()
+    val state by viewModel.uiState.collectAsStateWithLifecycle()
 
-    val popular by viewModel.popularCategory.collectAsState()
+    val popular by viewModel.popularCategory.collectAsStateWithLifecycle()
     val list = state.transactionList
+
     val userName by viewModel.userName.collectAsStateWithLifecycle()
 
     val preferencesViewModel: PreferencesViewModel = hiltViewModel()
@@ -281,7 +281,7 @@ fun ButtomRow(list: List<Transaction>, onShowAll: () -> Unit) {
 
 @Preview(showBackground = true)
 @Composable
-fun ButtomRowPreview() {
+fun ButtonRowPreview() {
     val cat = listOf(
         Transaction(
             id = 1,

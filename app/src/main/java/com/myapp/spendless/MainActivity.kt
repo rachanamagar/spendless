@@ -21,15 +21,15 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
-import com.myapp.spendless.feature.LoginScreen.presentation.LoginScreen
-import com.myapp.spendless.feature.LoginScreen.presentation.PinLoginScreen
-import com.myapp.spendless.feature.registration.presentation.PinScreen
-import com.myapp.spendless.feature.registration.presentation.UserViewmodel
-import com.myapp.spendless.feature.registration.presentation.WelcomeScreen
 import com.myapp.spendless.feature.Setting.SettingScreen
 import com.myapp.spendless.feature.Setting.preference.ui.SpendLessPreferenceScreen
 import com.myapp.spendless.feature.Setting.security.SecurityScreen
 import com.myapp.spendless.feature.Setting.security.SessionViewModel
+import com.myapp.spendless.feature.auth.presentation.UserViewmodel
+import com.myapp.spendless.feature.auth.presentation.login.LoginScreen
+import com.myapp.spendless.feature.auth.presentation.login.PinLoginScreen
+import com.myapp.spendless.feature.auth.presentation.pin.PinScreen
+import com.myapp.spendless.feature.auth.presentation.welcome.WelcomeScreen
 import com.myapp.spendless.feature.home.presentation.component.ListOfTransaction
 import com.myapp.spendless.feature.home.presentation.ui.HomeScreen
 import com.myapp.spendless.feature.home.presentation.ui.NewTransaction
@@ -77,15 +77,20 @@ class MainActivity : ComponentActivity() {
                         }
 
                         composable("PinScreen") {
-
-                            PinScreen(navController, state = userState, viewmodel::onAction)
+                            PinScreen(
+                                navController,
+                                userName = userState.user.name,
+                                viewmodel::onAction
+                            )
                         }
 
-                        composable("LoginScreen") { entry ->
-                            val pin = entry.savedStateHandle.get<String>("pinCode") ?: "Pin"
-                            LoginScreen(navController, pin, viewModelTransaction) {
-                                navController.navigate("HomeScreen")
-                            }
+                        composable("LoginScreen") { _ ->
+                            LoginScreen(
+                                onNavigateToPinScreen = { userNameText ->
+                                    navController.navigate("PinLoginScreen/$userNameText")
+                                },
+                                onNavigateToRegistration = { navController.navigate("WelcomeScreen") }
+                            )
                         }
 
                         composable(

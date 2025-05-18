@@ -1,4 +1,4 @@
-package com.myapp.spendless.feature.registration.presentation
+package com.myapp.spendless.feature.auth.presentation.pin
 
 import android.util.Log
 import androidx.compose.foundation.background
@@ -14,7 +14,6 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material3.Icon
@@ -27,38 +26,29 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import com.myapp.spendless.R
+import com.myapp.spendless.feature.auth.presentation.model.UserAction
 import com.myapp.spendless.feature.home.presentation.component.ButtonError
-import com.myapp.spendless.feature.registration.presentation.state.UserState
-import com.myapp.spendless.model.User
 import com.myapp.spendless.ui.theme.Primary
-import com.myapp.spendless.ui.theme.PrimaryFixed
 import kotlinx.coroutines.delay
-import java.util.UUID
 
 @Composable
-fun PinScreen(navController: NavController, state: UserState, onEvent:(UserAction)-> Unit) {
-
+fun PinScreen(navController: NavController, userName:String, onEvent:(UserAction)-> Unit) {
     var pinCodeList by remember { mutableStateOf<List<String>>(emptyList()) }
-    var confirmPinCode by remember { mutableStateOf<String>("") }
+    var confirmPinCode by remember { mutableStateOf("") }
     var isPinComplete by remember { mutableStateOf(false) }
 
-    val context = LocalContext.current
-
     var isCodeInCorrect by remember { mutableStateOf(false) }
-    var pinCode = pinCodeList.joinToString("")
+    val pinCode = pinCodeList.joinToString("")
     val pinLength = 5
 
     Column(
@@ -95,8 +85,8 @@ fun PinScreen(navController: NavController, state: UserState, onEvent:(UserActio
 
         Spacer(modifier = Modifier.height(20.dp))
 
-        Text(text = state.user.name)
-        Log.d("TAG", "the name is ${state.user.name}")
+        Text(text = userName)
+        Log.d("TAG", "the name is ${userName}")
         Text(
             text = if (pinCode.length < pinLength) "Create PIN" else "Repeat your PIN",
             fontSize = 28.sp,
@@ -220,71 +210,10 @@ fun PinScreen(navController: NavController, state: UserState, onEvent:(UserActio
 
 }
 
-
-@Composable
-fun PinNumber(number: String, onPinClicked: () -> Unit) {
-
-    Column(
-        modifier = Modifier
-            .padding(3.dp)
-            .clip(RoundedCornerShape(26.dp))
-            .background(color = PrimaryFixed)
-            .size(90.dp),
-        //horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.Center
-    ) {
-        Text(
-            text = number,
-            fontSize = 32.sp,
-            textAlign = TextAlign.Center,
-            modifier = Modifier
-                .padding(20.dp)
-                .align(Alignment.CenterHorizontally)
-                .clickable { onPinClicked() }
-        )
-    }
-}
-
-
-@Composable
-fun PinDelete(onDelete: () -> Unit) {
-
-    Column(
-        modifier = Modifier
-            .padding(3.dp)
-            .clip(RoundedCornerShape(26.dp))
-            .background(color = PrimaryFixed.copy(alpha = 0.5f))
-            .size(90.dp),
-        verticalArrangement = Arrangement.Center
-    ) {
-        Icon(
-            painter = painterResource(R.drawable.crossbg),
-            contentDescription = null,
-            tint = Color.Unspecified,
-            modifier = Modifier
-                .size(32.dp)
-                .align(Alignment.CenterHorizontally)
-                .clickable { onDelete() }
-        )
-    }
-}
-
 @Preview(showBackground = true)
 @Composable
 fun PinScreenPreview() {
     val navController = rememberNavController()
-    PinScreen(navController, state = UserState(
-        user = User(id = UUID.randomUUID(), name = "Harley Fischer", pin = "duis"),
-        isValidUser = false,
-        isExistingUser = false,
-        pinCode = "ligula",
-        isUserIdentify = false
-    ), {}
+    PinScreen(navController, userName = "User Name", {}
     )
-}
-
-@Preview(showBackground = true)
-@Composable
-fun PinNumberPreview() {
-    PinNumber("2") {}
 }

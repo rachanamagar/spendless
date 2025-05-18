@@ -5,10 +5,10 @@ import androidx.room.Room
 import com.myapp.spendless.data.LocalData.SpendLessDao
 import com.myapp.spendless.data.LocalData.SpendLessDatabase
 import com.myapp.spendless.data.LocalData.TransactionDao
-import com.myapp.spendless.feature.registration.data.UserRepositoryImpl
+import com.myapp.spendless.feature.auth.data.UserRepository
+import com.myapp.spendless.feature.auth.data.UserRepositoryImpl
 import com.myapp.spendless.feature.home.data.TransactionRepoImpl
 import com.myapp.spendless.feature.home.model.TransactionRepository
-import com.myapp.spendless.feature.registration.model.UserRepository
 import com.myapp.spendless.util.DataStoreManager
 import dagger.Module
 import dagger.Provides

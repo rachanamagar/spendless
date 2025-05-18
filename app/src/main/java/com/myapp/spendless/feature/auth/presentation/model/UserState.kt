@@ -1,6 +1,6 @@
-package com.myapp.spendless.feature.registration.presentation.state
+package com.myapp.spendless.feature.auth.presentation.model
 
-import com.myapp.spendless.model.User
+import com.myapp.spendless.feature.auth.model.User
 import java.util.UUID
 
 data class UserState(

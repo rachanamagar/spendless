@@ -1,11 +1,10 @@
-package com.myapp.spendless.feature.registration.model
+package com.myapp.spendless.feature.auth.data
 
-import com.myapp.spendless.model.User
+import com.myapp.spendless.feature.auth.model.User
 import kotlinx.coroutines.flow.Flow
 import java.util.UUID
 
 interface UserRepository {
-
     suspend fun insertUser(user: User)
     suspend fun getAllUser(): Flow<Set<User>>
     suspend fun getUserByName(userName: String): User?

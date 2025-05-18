@@ -1,8 +1,11 @@
-package com.myapp.spendless.feature.registration.presentation
+package com.myapp.spendless.feature.auth.presentation.login
 
-import android.util.Log
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -19,8 +22,11 @@ import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -29,7 +35,6 @@ import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
@@ -40,27 +45,25 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.myapp.spendless.R
 import com.myapp.spendless.feature.home.presentation.component.ButtonError
-import com.myapp.spendless.feature.registration.presentation.state.UserState
-import com.myapp.spendless.ui.theme.BackgroundBlack
 import com.myapp.spendless.ui.theme.Primary
-import kotlinx.coroutines.launch
+import kotlinx.coroutines.delay
 
 @Composable
-fun WelcomeScreen(
-    state: UserState,
-    onEvent: (UserAction) -> Unit,
-    onNextClicked: () -> Unit,
-    onLogin: () -> Unit
+fun LoginScreen(
+    onNavigateToPinScreen: (String) -> Unit,
+    onNavigateToRegistration: () -> Unit
 ) {
+
+    var userNameText by remember { mutableStateOf("") }
     val focusManager = LocalFocusManager.current
     val focusRequester = remember { FocusRequester() }
-    val coroutineScope = rememberCoroutineScope()
+    var showError by remember { mutableStateOf(false) }
 
     Column(
         modifier = Modifier
             .fillMaxWidth()
             .fillMaxHeight()
-            .padding(top = 100.dp),
+            .padding(top = 100.dp, start = 20.dp, end = 20.dp),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
 
@@ -75,7 +78,7 @@ fun WelcomeScreen(
         Spacer(modifier = Modifier.height(20.dp))
 
         Text(
-            text = stringResource(R.string.weclome_screen_header),
+            text = " Welcome Back !",
             fontSize = 28.sp,
             lineHeight = 36.sp,
             fontFamily = FontFamily(Font(R.font.fig_tree_medium)),
@@ -83,27 +86,31 @@ fun WelcomeScreen(
         )
         Spacer(modifier = Modifier.height(6.dp))
         Text(
-            text = stringResource(R.string.create_unique_username),
+            text = "Enter you login details",
             fontSize = 16.sp,
             fontFamily = FontFamily(
                 Font(R.font.fig_tree_loight)
             )
         )
 
+        Spacer(modifier = Modifier.height(36.dp))
         OutlinedTextField(
-            value = state.user.name,
+            value = userNameText,
             onValueChange = { newText ->
-                onEvent(UserAction.GetSessionUserName(newText))
-                coroutineScope.launch {
-                    onEvent(UserAction.ExistingUser(newText))
-                }
+                userNameText = newText
             },
+            modifier = Modifier
+                .fillMaxWidth()
+                .background(Color.White, RoundedCornerShape(16.dp))
+                .align(Alignment.CenterHorizontally)
+                .focusRequester(focusRequester),
             colors = OutlinedTextFieldDefaults.colors(
-                unfocusedContainerColor = BackgroundBlack.copy(alpha = 0.1f),
-                focusedContainerColor = BackgroundBlack.copy(alpha = 0.1f),
+                unfocusedContainerColor = Color.White,
+                focusedContainerColor = Color.White,
                 unfocusedBorderColor = Color.Transparent,
-                focusedBorderColor = Color.Transparent
+                focusedBorderColor = Primary
             ),
+            shape = RoundedCornerShape(16.dp),
             textStyle = TextStyle(
                 textAlign = TextAlign.Center,
                 color = Color.Gray,
@@ -120,7 +127,7 @@ fun WelcomeScreen(
             ),
             placeholder = {
                 Text(
-                    text = stringResource(R.string.username),
+                    text = "username",
                     color = Color.Gray,
                     fontSize = 16.sp,
                     modifier = Modifier,
@@ -132,59 +139,80 @@ fun WelcomeScreen(
                     textAlign = TextAlign.Center
                 )
             },
+        )
+
+        Spacer(modifier = Modifier.height(8.dp))
+
+        Box(
             modifier = Modifier
                 .fillMaxWidth()
-                .align(Alignment.CenterHorizontally)
-                .padding(20.dp)
-                .clip(RoundedCornerShape(16.dp))
-                .focusRequester(focusRequester)
+                .background(Color.White, RoundedCornerShape(16.dp))
+                .padding(horizontal = 20.dp, vertical = 15.dp)
+                .clickable {
+                    if (userNameText.isEmpty()) {
+                        showError = true
+                    } else {
+                        showError = false
+                        onNavigateToPinScreen(userNameText)
+                    }
+                }
+        ) {
+            Row(
+                horizontalArrangement = Arrangement.spacedBy(8.dp),
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Text(text = "PIN", color = Color.Gray, fontSize = 16.sp)
+            }
+        }
 
-        )
+        Spacer(modifier = Modifier.height(16.dp))
 
         Button(
             onClick = {
-                onNextClicked()
-                Log.d("TAG", state.user.name)
+                if (userNameText.isEmpty()) {
+                    showError = true
+                } else {
+                    showError = false
+                    // onLoginClicked()
+                }
             },
             colors = ButtonDefaults.buttonColors(
-                containerColor = if (state.user.name.isNotEmpty()) Primary else BackgroundBlack.copy(
-                    alpha = 0.2f
-                )
+                containerColor = Primary
             ),
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(horizontal = 20.dp)
                 .clip(RoundedCornerShape(10.dp))
+                .padding(horizontal = 20.dp)
+
         ) {
             Text(
-                text = stringResource(R.string.next),
-                color = if (state.user.name.isNotEmpty()) Color.White else Color.Gray,
+                text = "Log in",
+                color = Color.White,
                 fontSize = 14.sp,
                 modifier = Modifier.padding(8.dp)
             )
-
-            Icon(
-                painter = painterResource(R.drawable.forward_arrow),
-                tint = Color.Gray,
-                contentDescription = null,
-                modifier = Modifier
-                    .size(12.dp)
-            )
         }
-        Spacer(modifier = Modifier.height(6.dp))
+        Spacer(modifier = Modifier.height(16.dp))
 
         Text(
-            text = stringResource(R.string.already_have_an_account),
+            text = "New to SpendLess ?",
             color = Primary,
             fontFamily = FontFamily(Font(R.font.fig_tee_bold)),
             fontSize = 14.sp,
             modifier = Modifier
                 .padding(8.dp)
-                .clickable { onLogin() }
+                .clickable {
+                    onNavigateToRegistration()
+                }
         )
+    }
 
-        if (state.isExistingUser) {
-            ButtonError(stringResource(R.string.welcome_button_error))
+    if (showError) {
+        ButtonError("Enter user detail.")
+
+        LaunchedEffect(showError) {
+            delay(3000L)
+            showError = false
         }
     }
 }
@@ -192,6 +220,9 @@ fun WelcomeScreen(
 
 @Preview(showBackground = true)
 @Composable
-fun WelcomeScreenPreview() {
-    WelcomeScreen(state = UserState(), onEvent = {}, onNextClicked = {}, onLogin = {})
+fun LoginScreenPreview() {
+    LoginScreen(
+        onNavigateToPinScreen = {}
+    ) { }
 }
+

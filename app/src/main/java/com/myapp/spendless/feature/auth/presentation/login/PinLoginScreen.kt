@@ -1,4 +1,4 @@
-package com.myapp.spendless.feature.LoginScreen.presentation
+package com.myapp.spendless.feature.auth.presentation.login
 
 import android.util.Log
 import androidx.compose.foundation.background
@@ -38,11 +38,11 @@ import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.myapp.spendless.R
+import com.myapp.spendless.feature.auth.presentation.UserViewmodel
+import com.myapp.spendless.feature.auth.presentation.model.UserAction
+import com.myapp.spendless.feature.auth.presentation.pin.PinDelete
+import com.myapp.spendless.feature.auth.presentation.pin.PinNumber
 import com.myapp.spendless.feature.home.presentation.component.ButtonError
-import com.myapp.spendless.feature.registration.presentation.PinDelete
-import com.myapp.spendless.feature.registration.presentation.PinNumber
-import com.myapp.spendless.feature.registration.presentation.UserAction
-import com.myapp.spendless.feature.registration.presentation.UserViewmodel
 import com.myapp.spendless.ui.theme.Error
 import com.myapp.spendless.ui.theme.Primary
 import kotlinx.coroutines.Dispatchers

@@ -1,9 +1,10 @@
-package com.myapp.spendless.feature.registration.presentation
+package com.myapp.spendless.feature.auth.presentation
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.myapp.spendless.feature.registration.model.UserRepository
-import com.myapp.spendless.feature.registration.presentation.state.UserState
+import com.myapp.spendless.feature.auth.data.UserRepository
+import com.myapp.spendless.feature.auth.presentation.model.UserAction
+import com.myapp.spendless.feature.auth.presentation.model.UserState
 import com.myapp.spendless.util.SessionManager
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
