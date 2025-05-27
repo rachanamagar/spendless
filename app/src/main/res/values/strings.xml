@@ -6,4 +6,10 @@
     <string name="welcome_button_error">The username has been taken.</string>
     <string name="create_unique_username">Create unique username</string>
     <string name="weclome_screen_header">Welcome to SpendLess!\n How can we address you?</string>
+    <string name="new_to_spendless">New to SpendLess ?</string>
+    <string name="log_in">Log in</string>
+    <string name="pin">PIN</string>
+    <string name="user_name">username</string>
+    <string name="enter_you_login_details">Enter you login details</string>
+    <string name="welcome_back">" Welcome Back !"</string>
 </resources>

@@ -92,7 +92,6 @@ class MainActivity : ComponentActivity() {
                                 onNavigateToRegistration = { navController.navigate("WelcomeScreen") }
                             )
                         }
-
                         composable(
                             "PinLoginScreen/{name}",
                             arguments = listOf(

@@ -35,6 +35,7 @@ import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
@@ -78,7 +79,7 @@ fun LoginScreen(
         Spacer(modifier = Modifier.height(20.dp))
 
         Text(
-            text = " Welcome Back !",
+            text = stringResource(R.string.welcome_back),
             fontSize = 28.sp,
             lineHeight = 36.sp,
             fontFamily = FontFamily(Font(R.font.fig_tree_medium)),
@@ -86,7 +87,7 @@ fun LoginScreen(
         )
         Spacer(modifier = Modifier.height(6.dp))
         Text(
-            text = "Enter you login details",
+            text = stringResource(R.string.enter_you_login_details),
             fontSize = 16.sp,
             fontFamily = FontFamily(
                 Font(R.font.fig_tree_loight)
@@ -127,7 +128,7 @@ fun LoginScreen(
             ),
             placeholder = {
                 Text(
-                    text = "username",
+                    text = stringResource(R.string.user_name),
                     color = Color.Gray,
                     fontSize = 16.sp,
                     modifier = Modifier,
@@ -161,7 +162,7 @@ fun LoginScreen(
                 horizontalArrangement = Arrangement.spacedBy(8.dp),
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                Text(text = "PIN", color = Color.Gray, fontSize = 16.sp)
+                Text(text = stringResource(R.string.pin), color = Color.Gray, fontSize = 16.sp)
             }
         }
 
@@ -186,7 +187,7 @@ fun LoginScreen(
 
         ) {
             Text(
-                text = "Log in",
+                text = stringResource(R.string.log_in),
                 color = Color.White,
                 fontSize = 14.sp,
                 modifier = Modifier.padding(8.dp)
@@ -195,7 +196,7 @@ fun LoginScreen(
         Spacer(modifier = Modifier.height(16.dp))
 
         Text(
-            text = "New to SpendLess ?",
+            text = stringResource(R.string.new_to_spendless),
             color = Primary,
             fontFamily = FontFamily(Font(R.font.fig_tee_bold)),
             fontSize = 14.sp,

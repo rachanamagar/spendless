@@ -10,6 +10,7 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -24,14 +25,12 @@ class UserViewmodel @Inject constructor(
     val state: StateFlow<UserState> = _uiState
 
 
-     fun onAction(action: UserAction) {
+    fun onAction(action: UserAction) {
         when (action) {
-            is UserAction.GetUsername -> getUsername(action.username)
             is UserAction.GetPin -> getPin(action.pin)
             is UserAction.InsertUser -> insertUser()
-            is UserAction.ValidateUser -> validateUser(action.name, action.pin, action.onResult)
+            is UserAction.ValidateUser -> validateUser(action.name, action.pin)
             is UserAction.LogOutUser -> logOutUser()
-            is UserAction.SaveUserName -> saveUserName(action.userName)
             is UserAction.GetSessionUserName -> getUsername(action.userName)
             is UserAction.ExistingUser -> isExistingUser(action.name)
         }
@@ -70,14 +69,23 @@ class UserViewmodel @Inject constructor(
         }
     }
 
-    private fun validateUser(name: String, pin: String, onResult: (Boolean) -> Unit) {
+    private fun validateUser(name: String, pin: String) {
         viewModelScope.launch {
             val user = repository.getUserByName(name)
             if (user != null && user.pin == pin) {
                 sessionManager.saveUserSession(user.id)
-                onResult(true)
+                sessionManager.saveUserName(name)
+                _uiState.update {
+                    it.copy(
+                        isValidUser = true
+                    )
+                }
             } else {
-                onResult(false)
+                _uiState.update {
+                    it.copy(
+                        isValidUser = false
+                    )
+                }
             }
         }
     }
@@ -85,18 +93,6 @@ class UserViewmodel @Inject constructor(
     fun logOutUser() {
         viewModelScope.launch {
             sessionManager.clearUserSession()
-        }
-    }
-
-    private fun saveUserName(userName: String) {
-        viewModelScope.launch {
-            sessionManager.saveUserName(userName)
-        }
-    }
-
-    fun getUserName() {
-        viewModelScope.launch {
-            sessionManager.getUserName()
         }
     }
 }

@@ -1,6 +1,5 @@
 package com.myapp.spendless.feature.auth.presentation.login
 
-import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -25,7 +24,6 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -36,6 +34,7 @@ import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
 import com.myapp.spendless.R
 import com.myapp.spendless.feature.auth.presentation.UserViewmodel
@@ -45,25 +44,20 @@ import com.myapp.spendless.feature.auth.presentation.pin.PinNumber
 import com.myapp.spendless.feature.home.presentation.component.ButtonError
 import com.myapp.spendless.ui.theme.Error
 import com.myapp.spendless.ui.theme.Primary
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 
 @Composable
 fun PinLoginScreen(name: String, navController: NavController) {
 
-    var pinCode by remember { mutableStateOf<String>("") }
-    var isPinComplete by remember { mutableStateOf(false) }
-
+    var pinCode by remember { mutableStateOf("") }
+    var loginButtonClicked by remember { mutableStateOf(false) }
     val viewmodel: UserViewmodel = hiltViewModel()
-    var userValid by remember { mutableStateOf<Boolean?>(null) }
-    var isValidating by remember { mutableStateOf(false) }
-    var showError by remember { mutableStateOf(false) }
-    val coroutineScope = rememberCoroutineScope()
-
+    val userState by viewmodel.state.collectAsStateWithLifecycle()
     val pinLength = 5
 
+    if (userState.isValidUser) {
+        navController.navigate("HomeScreen")
+    }
     Column(
         modifier = Modifier
             .fillMaxWidth()
@@ -71,7 +65,6 @@ fun PinLoginScreen(name: String, navController: NavController) {
             .padding(30.dp),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-
         Row(
             modifier = Modifier
                 .fillMaxWidth()
@@ -100,7 +93,12 @@ fun PinLoginScreen(name: String, navController: NavController) {
                     painter = painterResource(R.drawable.logout),
                     contentDescription = null,
                     tint = Error,
-                    modifier = Modifier.size(20.dp).clickable { navController.navigate("LoginScreen") }
+                    modifier = Modifier
+                        .size(20.dp)
+                        .clickable {
+                            loginButtonClicked = true
+                            viewmodel.onAction(UserAction.ValidateUser(name, pinCode))
+                        }
                 )
             }
         }
@@ -185,46 +183,12 @@ fun PinLoginScreen(name: String, navController: NavController) {
         }
     }
 
-
-    LaunchedEffect(pinCode) {
-        if (pinCode.length == pinLength) {
-            isPinComplete = true
-            isValidating = true
-            Log.d("TAG", isValidating.toString())
-
-            try {
-                withContext(Dispatchers.IO) {
-                    viewmodel.onAction(UserAction.ValidateUser(name, pinCode) { isValid ->
-                        coroutineScope.launch {
-                            if (isValid) {
-                                viewmodel.onAction(UserAction.SaveUserName(name))
-                                navController.previousBackStackEntry
-                                    ?.savedStateHandle
-                                    ?.set("pinCode", pinCode)
-                                delay(100)
-                               // navController.popBackStack()
-                            } else {
-                                showError = true
-                                delay(1000)
-                                pinCode = ""
-                                isPinComplete = false
-                            }
-                        }
-                    })
-                }
-            } catch (e: Exception) {
-                Log.e("PinValidation", "Error during validation", e)
-                coroutineScope.launch {
-                    showError = true
-                    delay(1000)
-                    pinCode = ""
-                    showError = false
-                    isValidating = false
-                }
-            }
-        }
-    }
-    if (showError) {
+    if (!userState.isValidUser && pinCode.length == 5 && loginButtonClicked) {
         ButtonError("Wrong Pin")
+        LaunchedEffect(Unit) {
+            delay(3000L)
+            pinCode = ""
+            loginButtonClicked = false
+        }
     }
 }
