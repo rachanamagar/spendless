@@ -18,12 +18,10 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.tooling.preview.Preview
@@ -49,7 +47,6 @@ fun NewTransaction(onBack: () -> Unit) {
     val viewModel: TransactionViewModel = hiltViewModel()
     val state by viewModel.uiState.collectAsState()
     val sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
-    val coroutineScope = rememberCoroutineScope()
     val context = LocalContext.current
     var isExpanded by remember { mutableStateOf(false) }
     var selectedCategory by remember { mutableStateOf<Categories?>(null) }
@@ -124,7 +121,6 @@ fun ModalSheetBottom(
 ) {
 
     val buttonList = listOf(Menu("Expense", R.drawable.down), Menu("Income", R.drawable.up))
-    val keyboardController = LocalSoftwareKeyboardController.current
     var selectedIndex by remember { mutableIntStateOf(0) }
 
     Column(

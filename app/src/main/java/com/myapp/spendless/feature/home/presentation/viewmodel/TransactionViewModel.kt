@@ -45,7 +45,7 @@ class TransactionViewModel @Inject constructor(
     val userName: StateFlow<String?> =
         sessionManager.getUserName().stateIn(viewModelScope, SharingStarted.Lazily, null)
 
-    val userTransactionFlow: StateFlow<List<Transaction>> = sessionManager.getUserSession()
+    private val userTransactionFlow: StateFlow<List<Transaction>> = sessionManager.getUserSession()
         .map { userId ->
             userId?.let { repository.getTransaction(it) } ?: flowOf(emptyList())
         }

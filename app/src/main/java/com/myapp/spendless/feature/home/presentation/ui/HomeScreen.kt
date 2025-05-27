@@ -24,7 +24,6 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -41,7 +40,6 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.myapp.spendless.R
 import com.myapp.spendless.feature.Setting.formatTotalAmount
-import com.myapp.spendless.feature.Setting.preference.viewModel.PreferencesViewModel
 import com.myapp.spendless.feature.Setting.toDollar
 import com.myapp.spendless.feature.home.model.Transaction
 import com.myapp.spendless.feature.home.presentation.component.AppTopBar
@@ -49,7 +47,7 @@ import com.myapp.spendless.feature.home.presentation.component.HighestTransactio
 import com.myapp.spendless.feature.home.presentation.component.PreviousWeekTransaction
 import com.myapp.spendless.feature.home.presentation.component.TransactionLayout
 import com.myapp.spendless.feature.home.presentation.component.TransactionList
-import com.myapp.spendless.feature.home.presentation.viewmodel.TransactionViewModel
+import com.myapp.spendless.feature.home.presentation.viewmodel.HomeViewModel
 import com.myapp.spendless.ui.theme.PrimaryContainer
 import com.myapp.spendless.ui.theme.PrimaryFixed
 import com.myapp.spendless.ui.theme.PrimaryOne
@@ -64,31 +62,14 @@ import java.util.UUID
 @Composable
 fun HomeScreen(onSetting: () -> Unit, onCLicked: () -> Unit, onShowAll: () -> Unit) {
 
-    val viewModel: TransactionViewModel = hiltViewModel()
+    val viewModel: HomeViewModel = hiltViewModel()
     val state by viewModel.uiState.collectAsStateWithLifecycle()
-
-    val popular by viewModel.popularCategory.collectAsStateWithLifecycle()
-    val list = state.transactionList
-
-    val userName by viewModel.userName.collectAsStateWithLifecycle()
-
-    val preferencesViewModel: PreferencesViewModel = hiltViewModel()
-    val uiPreferences by preferencesViewModel.uiPreferenceState.collectAsStateWithLifecycle()
-    val currency by preferencesViewModel.currencySymbol.collectAsStateWithLifecycle()
-
-    LaunchedEffect(Unit) {
-        viewModel.getAllTransaction()
-        preferencesViewModel.loadPreference()
-        preferencesViewModel.savePreference()
-        viewModel.getPreviousWeekTransaction()
-
-    }
 
     Scaffold(
         topBar = {
             TopAppBar(
                 title = {
-                    AppTopBar(userName ?: "Guest") {
+                    AppTopBar(state.username ?: "Guest") {
                         onSetting()
                     }
                 },
@@ -142,21 +123,24 @@ fun HomeScreen(onSetting: () -> Unit, onCLicked: () -> Unit, onShowAll: () -> Un
                     ) {
 
                         Text(
-                            text = currency ?: state.symbol,
+                            text = state.currency ?: "$",
                             fontFamily = FontFamily(Font(R.font.fig_tree_medium)),
                             fontSize = 30.sp,
                             color = Color.White
                         )
 
-                        Text(
-                            formatTotalAmount(
-                                state.totalAmount.formatToTwoDecimal(),
-                                priceDisplayConfig = uiPreferences.priceDisplayConfig,
-                            ),
-                            fontSize = 45.sp,
-                            color = Color.White,
-                            fontFamily = FontFamily(Font(R.font.fig_tree_medium)),
-                        )
+                        state.priceDisplayConfig?.let {
+                            Text(
+                                formatTotalAmount(
+                                    state.totalAmount.formatToTwoDecimal(),
+                                    priceDisplayConfig = it,
+                                ),
+                                fontSize = 45.sp,
+                                color = Color.White,
+                                fontFamily = FontFamily(Font(R.font.fig_tree_medium)),
+                            )
+                        }
+
                     }
                     Text(
                         "Account Balance",
@@ -167,7 +151,7 @@ fun HomeScreen(onSetting: () -> Unit, onCLicked: () -> Unit, onShowAll: () -> Un
                 }
             }
 
-            popular?.let { HighestTransactionSection(popular) }
+            state.popularCategory?.let { HighestTransactionSection(it) }
 
             Row(
                 modifier = Modifier
@@ -203,10 +187,10 @@ fun HomeScreen(onSetting: () -> Unit, onCLicked: () -> Unit, onShowAll: () -> Un
                 }
 
                 Spacer(modifier = Modifier.width(8.dp))
-                PreviousWeekTransaction(state.lastWeek.formatToTwoDecimal().toDollar())
+                PreviousWeekTransaction(state.lastWeekTransactionAmount.formatToTwoDecimal().toDollar())
             }
             ButtomRow(
-                list = list
+                list = state.transactionList
             ) { onShowAll() }
         }
     }
@@ -218,14 +202,20 @@ fun ButtomRow(list: List<Transaction>, onShowAll: () -> Unit) {
     Box(
         modifier = Modifier
             .fillMaxWidth()
-            .background(PrimaryContainer.copy(alpha = 0.1f), RoundedCornerShape(topStart = 16.dp, topEnd = 16.dp))
+            .background(
+                PrimaryContainer.copy(alpha = 0.1f),
+                RoundedCornerShape(topStart = 16.dp, topEnd = 16.dp)
+            )
     ) {
         Column(
             modifier = Modifier
                 .fillMaxWidth()
                 .fillMaxHeight()
                 // .height(442.dp)
-                .background(SurfaceBackground, shape = RoundedCornerShape(topStart = 16.dp, topEnd = 16.dp))
+                .background(
+                    SurfaceBackground,
+                    shape = RoundedCornerShape(topStart = 16.dp, topEnd = 16.dp)
+                )
                 .padding(10.dp),
             verticalArrangement = Arrangement.Center,
             horizontalAlignment = Alignment.CenterHorizontally
@@ -342,6 +332,7 @@ fun Double.formatToTwoDecimal(): String {
     }
     return formatter.format(this)
 }
+
 @Preview(showBackground = true)
 @Composable
 fun HomeScreenPreview() {
