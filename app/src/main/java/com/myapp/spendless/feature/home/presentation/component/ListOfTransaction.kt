@@ -1,7 +1,6 @@
 package com.myapp.spendless.feature.home.presentation.component
 
 import android.icu.util.Calendar
-import android.util.Log
 import android.widget.Toast
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -18,7 +17,6 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -33,20 +31,23 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.myapp.spendless.R
-import com.myapp.spendless.feature.home.presentation.viewmodel.HomeViewModel
+import com.myapp.spendless.feature.home.model.ExportRange
+import com.myapp.spendless.feature.home.model.ExportType
+import com.myapp.spendless.feature.home.model.Transaction
+import com.myapp.spendless.feature.home.presentation.viewmodel.TransactionViewModel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ListOfTransaction(onBack: () -> Unit) {
-    val viewModel: HomeViewModel = hiltViewModel()
-    val state by viewModel.uiState.collectAsState()
+    val viewModel: TransactionViewModel = hiltViewModel()
+    val state by viewModel.uiState.collectAsStateWithLifecycle()
     val list = state.transactionList
     val context = LocalContext.current
     var isExported by remember { mutableStateOf(false) }
-    //var isRangeSelected by remember { mutableStateOf(false) }
     val coroutineScope = rememberCoroutineScope()
 
     var sortedList by remember { mutableStateOf(list) }
@@ -99,79 +100,90 @@ fun ListOfTransaction(onBack: () -> Unit) {
     }
 
     if (isExported) {
-        ExportModal(onRangeClicked = { range, month ->
-            sortedList = when (range) {
-                0 -> {
-                    val calendar = Calendar.getInstance()
-                    calendar.add(Calendar.MONTH, -3)
-                    val threeMonthAgo = calendar.timeInMillis
-                    list.filter { it.date >= threeMonthAgo }
-                }
-
-                1 -> {
-                    val calendar = Calendar.getInstance().apply {
-                        set(Calendar.DAY_OF_MONTH, 1)
-                        clear(Calendar.HOUR_OF_DAY)
-                        clear(Calendar.MINUTE)
-                        clear(Calendar.SECOND)
-                        clear(Calendar.MILLISECOND)
+        ExportModal(
+            onRangeClicked = { range ->
+                sortedList = getListFromExportRange(range, list)
+            },
+            onExportClicked = { exportType ->
+                when (exportType) {
+                    ExportType.CSV -> {
+                        exportTransactionToCSV(context, sortedList)
+                        Toast.makeText(
+                            context,
+                            "CSV exported to Downloads",
+                            Toast.LENGTH_SHORT
+                        ).show()
+                        coroutineScope.launch {
+                            delay(2000L)
+                            isExported = false
+                        }
                     }
-                    val startOfMonth = calendar.timeInMillis
-                    list.filter { it.date >= startOfMonth }
-                }
 
-                2 -> {
-                    val calendar = Calendar.getInstance().apply {
-                        set(Calendar.DAY_OF_MONTH, 1)
-                        clear(Calendar.HOUR_OF_DAY)
-                        clear(Calendar.MINUTE)
-                        clear(Calendar.SECOND)
-                        clear(Calendar.MILLISECOND)
-
+                    ExportType.PDF -> {
+                        exportTransactionToPDF(context, sortedList)
+                        Toast.makeText(
+                            context,
+                            "PDF exported to Downloads",
+                            Toast.LENGTH_SHORT
+                        ).show()
+                        coroutineScope.launch {
+                            delay(2000L)
+                            isExported = false
+                        }
                     }
-                    val endOfLastMonth = calendar.timeInMillis
-                    calendar.add(Calendar.MONTH, -1)
-                    val startOfLastMonth = calendar.timeInMillis
-
-                    list.filter { it.date in startOfLastMonth until endOfLastMonth }
                 }
-
-                else -> { list
-                }
-            }
-            Log.d("list", "Sorted list size: ${sortedList.size}")
-        }
+            },
+            onDismiss = { isExported = false }
         )
-        {
-            if (it == 0) {
-                exportTransactionToCSV(context, sortedList)
-                Toast.makeText(
-                    context,
-                    "CSV exported to Downloads",
-                    Toast.LENGTH_SHORT
-                ).show()
-                coroutineScope.launch {
-                    delay(2000L)
-                    isExported = false
-                }
-            } else {
-                exportTransactionToPDF(context, sortedList)
-                Toast.makeText(
-                    context,
-                    "PDF exported to Downloads",
-                    Toast.LENGTH_SHORT
-                ).show()
-                coroutineScope.launch {
-                    delay(2000L)
-                    isExported = false
-                }
-            }
+    }
+}
+
+private fun getListFromExportRange(
+    range: ExportRange,
+    list: List<Transaction>
+) = when (range) {
+    ExportRange.LAST_THREE_MONTH -> {
+        val calendar = Calendar.getInstance()
+        calendar.add(Calendar.MONTH, -3)
+        val threeMonthAgo = calendar.timeInMillis
+        list.filter { it.date >= threeMonthAgo }
+    }
+
+    ExportRange.CURRENT_MONTH -> {
+        val calendar = Calendar.getInstance().apply {
+            set(Calendar.DAY_OF_MONTH, 1)
+            clear(Calendar.HOUR_OF_DAY)
+            clear(Calendar.MINUTE)
+            clear(Calendar.SECOND)
+            clear(Calendar.MILLISECOND)
         }
+        val startOfMonth = calendar.timeInMillis
+        list.filter { it.date >= startOfMonth }
+    }
+
+    ExportRange.LAST_MONTH -> {
+        val calendar = Calendar.getInstance().apply {
+            set(Calendar.DAY_OF_MONTH, 1)
+            clear(Calendar.HOUR_OF_DAY)
+            clear(Calendar.MINUTE)
+            clear(Calendar.SECOND)
+            clear(Calendar.MILLISECOND)
+
+        }
+        val endOfLastMonth = calendar.timeInMillis
+        calendar.add(Calendar.MONTH, -1)
+        val startOfLastMonth = calendar.timeInMillis
+
+        list.filter { it.date in startOfLastMonth until endOfLastMonth }
+    }
+
+    else -> {
+        list
     }
 }
 
 @Preview(showBackground = true)
 @Composable
-fun ListOfAllTransaction(){
-    ListOfTransaction {  }
+fun ListOfAllTransaction() {
+    ListOfTransaction { }
 }

@@ -14,7 +14,6 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
@@ -26,6 +25,7 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
@@ -38,21 +38,25 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.myapp.spendless.R
+import com.myapp.spendless.feature.home.model.ExportRange
+import com.myapp.spendless.feature.home.model.ExportType
 import com.myapp.spendless.ui.theme.Primary
 
 @Composable
-fun ExportModalSheet(onItemClicked: (Int, String) -> Unit, onExportClicked: (Int) -> Unit) {
+fun ExportModalSheet(
+    onDateRangeClicked: (ExportRange) -> Unit,
+    onExportClicked: (ExportType) -> Unit
+) {
 
     var text by remember { mutableStateOf("Last three months") }
     var isRangeExpanded by remember { mutableStateOf(false) }
     var isRangeSelected by remember { mutableStateOf(false) }
-    var format by remember { mutableStateOf("CSV") }
+    var format by remember { mutableStateOf(ExportType.CSV) }
     var isFormatExpanded by remember { mutableStateOf(false) }
-    var formatIndex by remember { mutableStateOf(0) }
-    var rangeIndex by remember { mutableStateOf(0) }
+    var rangeIndex by remember { mutableIntStateOf(0) }
     var isSpecificMonthSelected by remember { mutableStateOf(false) }
 
-    val list = listOf("Last three month", "Current month", "Last Month", "Specific month")
+    val list = ExportRange.entries
 
     Column(
         modifier = Modifier
@@ -118,17 +122,17 @@ fun ExportModalSheet(onItemClicked: (Int, String) -> Unit, onExportClicked: (Int
                         horizontalArrangement = Arrangement.SpaceBetween
                     ) {
                         Text(
-                            text = item, fontSize = 14.sp,
+                            text = item.rangeName, fontSize = 14.sp,
                             fontFamily = FontFamily(Font(R.font.fig_tree_regular)),
                             modifier = Modifier.clickable {
-                                text = item
+                                text = item.rangeName
                                 rangeIndex = index
                                 isRangeSelected = true
-                                if (item == "Specific month") {
+                                if (item == ExportRange.SPECIFIC_MONTH) {
                                     isSpecificMonthSelected = true
                                 }
                                 isRangeExpanded = false
-                                onItemClicked(index, item)
+                                onDateRangeClicked(item)
                                 Log.d("ExportModalSheet", "Selected rangeIndex: $rangeIndex")
                             }
                         )
@@ -170,7 +174,7 @@ fun ExportModalSheet(onItemClicked: (Int, String) -> Unit, onExportClicked: (Int
                     horizontalArrangement = Arrangement.SpaceBetween
                 ) {
                     Text(
-                        text = format, fontSize = 14.sp,
+                        text = format.formatName, fontSize = 14.sp,
                         fontFamily = FontFamily(Font(R.font.fig_tree_regular))
                     )
 
@@ -184,7 +188,7 @@ fun ExportModalSheet(onItemClicked: (Int, String) -> Unit, onExportClicked: (Int
                 }
             }
             Spacer(modifier = Modifier.height(4.dp))
-            val formatList = listOf("CSV", "PDF")
+            val formatList = ExportType.entries
 
             if (isFormatExpanded) {
                 Column(
@@ -205,11 +209,10 @@ fun ExportModalSheet(onItemClicked: (Int, String) -> Unit, onExportClicked: (Int
                                 horizontalArrangement = Arrangement.SpaceBetween
                             ) {
                                 Text(
-                                    text = item, fontSize = 14.sp,
+                                    text = item.formatName, fontSize = 14.sp,
                                     fontFamily = FontFamily(Font(R.font.fig_tree_regular)),
                                     modifier = Modifier.clickable {
                                         format = item
-                                        formatIndex = index
                                         isFormatExpanded = false
                                     }
                                 )
@@ -223,7 +226,7 @@ fun ExportModalSheet(onItemClicked: (Int, String) -> Unit, onExportClicked: (Int
         Spacer(modifier = Modifier.height(12.dp))
         Button(
             onClick = {
-                onExportClicked(formatIndex)
+                onExportClicked(format)
             }, modifier = Modifier.fillMaxWidth(),
             colors = ButtonDefaults.buttonColors(
                 containerColor = Primary
@@ -241,19 +244,23 @@ fun ExportModalSheet(onItemClicked: (Int, String) -> Unit, onExportClicked: (Int
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun ExportModal(onRangeClicked: (Int, String) -> Unit, onExportClicked: (Int) -> Unit) {
+fun ExportModal(
+    onRangeClicked: (ExportRange) -> Unit,
+    onExportClicked: (ExportType) -> Unit,
+    onDismiss: () -> Unit
+) {
     val sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = false)
     Column(
         modifier = Modifier.fillMaxWidth()
     ) {
         ModalBottomSheet(
-            onDismissRequest = {},
+            onDismissRequest = { onDismiss() },
             sheetState = sheetState,
             modifier = Modifier
                 .fillMaxSize()
                 .padding(top = 50.dp)
         ) {
-            ExportModalSheet(onItemClicked = onRangeClicked, onExportClicked = onExportClicked)
+            ExportModalSheet(onDateRangeClicked = onRangeClicked, onExportClicked = onExportClicked)
         }
     }
 }
