@@ -33,6 +33,7 @@ import com.myapp.spendless.feature.auth.presentation.welcome.WelcomeScreen
 import com.myapp.spendless.feature.home.presentation.component.ListOfTransaction
 import com.myapp.spendless.feature.home.presentation.ui.HomeScreen
 import com.myapp.spendless.feature.home.presentation.ui.NewTransaction
+import com.myapp.spendless.feature.home.presentation.viewmodel.HomeViewModel
 import com.myapp.spendless.feature.home.presentation.viewmodel.TransactionViewModel
 import com.myapp.spendless.ui.theme.SpendlessTheme
 import com.myapp.spendless.ui.theme.SurfaceBackground

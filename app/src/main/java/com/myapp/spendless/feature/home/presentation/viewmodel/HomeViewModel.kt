@@ -2,10 +2,10 @@ package com.myapp.spendless.feature.home.presentation.viewmodel
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.myapp.spendless.R
-import com.myapp.spendless.feature.Setting.preference.model.PriceDisplayConfig
+import com.myapp.spendless.feature.home.model.Category
 import com.myapp.spendless.feature.home.model.Transaction
 import com.myapp.spendless.feature.home.model.TransactionRepository
+import com.myapp.spendless.feature.home.presentation.state.HomeUiState
 import com.myapp.spendless.util.DataStoreManager
 import com.myapp.spendless.util.SessionManager
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -22,7 +22,6 @@ import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
-import java.util.UUID
 import java.util.concurrent.TimeUnit
 import javax.inject.Inject
 import kotlin.math.abs
@@ -35,9 +34,7 @@ class HomeViewModel @Inject constructor(
     private val dataStoreManager: DataStoreManager
 ) : ViewModel() {
 
-    private val _uiState = MutableStateFlow(
-        HomeUiState()
-    )
+    private val _uiState = MutableStateFlow(HomeUiState())
     val uiState = _uiState.asStateFlow()
 
     private val userTransactionFlow: StateFlow<List<Transaction>> = sessionManager.getUserSession()
@@ -63,7 +60,7 @@ class HomeViewModel @Inject constructor(
                     transactionList = transactions,
                     maxTransaction = userTransactionFlow.value
                         .asSequence()
-                        .filter { it.category != "Income" }
+                        .filter { it.category != Category.INCOME.categoryName }
                         .maxByOrNull { it.amount },
                     popularCategory = getPopularCategory(transactions),
                     username = userName ?: "",
@@ -72,12 +69,19 @@ class HomeViewModel @Inject constructor(
                 )
             }.collect { newState ->
                 _uiState.value = newState
+                saveTotalAmount()
             }
         }
     }
 
     private fun getTotalAmount() = userTransactionFlow.value.sumOf {
         if (it.category == "Income") it.amount else -it.amount
+    }
+
+    private fun saveTotalAmount() {
+        viewModelScope.launch {
+            dataStoreManager.saveTotalAmount(amount = getTotalAmount())
+        }
     }
 
     private fun getPopularCategory(transactions: List<Transaction>) =
@@ -105,24 +109,3 @@ class HomeViewModel @Inject constructor(
         ?: 0.0)
 
 }
-
-
-data class HomeUiState(
-    val totalAmount: Double = 0.00,
-    val lastWeekTransactionAmount: Double = 0.00,
-    val maxTransaction: Transaction? = Transaction(
-        id = 0,
-        title = "",
-        amount = 1.0,
-        note = "",
-        category = "Income",
-        icon = R.drawable.income,
-        date = 1,
-        userId = UUID.randomUUID()
-    ),
-    val transactionList: List<Transaction> = emptyList(),
-    val username: String? = null,
-    val currency: String? = null,
-    val popularCategory: String? = null,
-    val priceDisplayConfig: PriceDisplayConfig? = null
-)

@@ -29,11 +29,12 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.myapp.spendless.R
-import com.myapp.spendless.feature.home.presentation.viewmodel.TransactionViewModel
+import com.myapp.spendless.feature.home.presentation.viewmodel.HomeViewModel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
@@ -41,12 +42,12 @@ import kotlinx.coroutines.launch
 @Composable
 fun ListOfTransaction(onBack: () -> Unit) {
 
-    val viewModel: TransactionViewModel = hiltViewModel()
+    val viewModel: HomeViewModel = hiltViewModel()
     val state by viewModel.uiState.collectAsState()
     val list = state.transactionList
     val context = LocalContext.current
     var isExported by remember { mutableStateOf(false) }
-    var isRangeSelected by remember { mutableStateOf(false) }
+    //var isRangeSelected by remember { mutableStateOf(false) }
     val coroutineScope = rememberCoroutineScope()
 
     var sortedList by remember { mutableStateOf(list) }
@@ -168,4 +169,10 @@ fun ListOfTransaction(onBack: () -> Unit) {
             }
         }
     }
+}
+
+@Preview(showBackground = true)
+@Composable
+fun ListOfAllTransaction(){
+    ListOfTransaction {  }
 }

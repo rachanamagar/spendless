@@ -2,33 +2,19 @@ package com.myapp.spendless.feature.home.presentation.viewmodel
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.myapp.spendless.feature.home.model.Transaction
 import com.myapp.spendless.feature.home.model.TransactionRepository
 import com.myapp.spendless.feature.home.presentation.state.TransactionEvent
 import com.myapp.spendless.feature.home.presentation.state.TransactionState
 import com.myapp.spendless.util.DataStoreManager
 import com.myapp.spendless.util.SessionManager
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.firstOrNull
-import kotlinx.coroutines.flow.flatMapLatest
-import kotlinx.coroutines.flow.flowOf
-import kotlinx.coroutines.flow.map
-import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
-import java.util.concurrent.TimeUnit
 import javax.inject.Inject
-import kotlin.math.abs
 
-@OptIn(ExperimentalCoroutinesApi::class)
 @HiltViewModel
 class TransactionViewModel @Inject constructor(
     private val repository: TransactionRepository,
@@ -38,29 +24,6 @@ class TransactionViewModel @Inject constructor(
 
     private val _uiState = MutableStateFlow(TransactionState())
     val uiState: StateFlow<TransactionState> = _uiState
-
-    private val _popularCategory = MutableStateFlow<String?>(null)
-    val popularCategory = _popularCategory.asStateFlow()
-
-    val userName: StateFlow<String?> =
-        sessionManager.getUserName().stateIn(viewModelScope, SharingStarted.Lazily, null)
-
-    private val userTransactionFlow: StateFlow<List<Transaction>> = sessionManager.getUserSession()
-        .map { userId ->
-            userId?.let { repository.getTransaction(it) } ?: flowOf(emptyList())
-        }
-        .flatMapLatest { it }
-        .catch { e -> println(e.localizedMessage ?: "An error occurred.") }
-        .stateIn(viewModelScope, SharingStarted.Eagerly, emptyList())
-
-
-    init {
-        getAllTransaction()
-        totalBalance()
-        showLargestAmount()
-        showFamousCategory()
-        getPreviousWeekTransaction()
-    }
 
     fun handleEvent(event: TransactionEvent) {
         when (event) {
@@ -124,30 +87,6 @@ class TransactionViewModel @Inject constructor(
         }
     }
 
-    fun getPreviousWeekTransaction() {
-        viewModelScope.launch(Dispatchers.IO) {
-            val getTransaction =
-                userTransactionFlow.firstOrNull() ?: emptyList()
-
-            val currentDate = System.currentTimeMillis()
-            val oneWeekAgoDate = currentDate - TimeUnit.DAYS.toMillis(7)
-
-            val sortedList = getTransaction.filter {
-                it.date < oneWeekAgoDate
-            }
-            val totalIncome = sortedList.filter { it.category == "Income" }.sumOf { it.amount }
-            val totalExpense = sortedList.filter { it.category != "Income" }.sumOf { it.amount }
-
-            val totalAmount = totalIncome - totalExpense
-
-            withContext(Dispatchers.Main) {
-                _uiState.value = _uiState.value.copy(
-                    lastWeek = abs(totalAmount)
-                )
-            }
-        }
-    }
-
     fun insertTransaction() {
         val date = System.currentTimeMillis()
         _uiState.value = _uiState.value.copy(
@@ -163,85 +102,7 @@ class TransactionViewModel @Inject constructor(
         }
     }
 
-    fun getAllTransaction() {
-        viewModelScope.launch(Dispatchers.IO) {
-            userTransactionFlow
-                .collect { list ->
-                    _uiState.value = _uiState.value.copy(
-                        transactionList = list
-                    )
-                }
-        }
-    }
-
-    private fun totalBalance() {
-        viewModelScope.launch {
-            userTransactionFlow.map { transaction ->
-                transaction.sumOf {
-                    if (it.category == "Income") it.amount else -it.amount
-                }
-            }
-                ?.collect { total ->
-                    _uiState.update {
-                        it.copy(totalAmount = total)
-                    }
-                    dataStoreManager.saveTotalAmount(total)
-                }
-        }
-    }
-
-    private fun showFamousCategory() {
-        viewModelScope.launch {
-            userTransactionFlow.collect { transactions ->
-                val mostFrequentCategory = transactions
-                    .filter { it.category != "Income" }
-                    .groupingBy { it.category }
-                    .eachCount()
-
-                val maxCount = mostFrequentCategory.values.maxOrNull()
-                val popularCount = mostFrequentCategory
-                    .filterValues { it == maxCount }
-                    .keys
-
-                _popularCategory.value =
-                    if (popularCount.size == 1) popularCount.first() else null
-            }
-        }
-    }
-
-    private fun showLargestAmount() {
-        viewModelScope.launch {
-            userTransactionFlow.collect { transactionList ->
-                val filteredTransaction = transactionList.filter { it.category != "Income" }
-                val largestTransaction = filteredTransaction.maxByOrNull { it.amount }
-
-                val currentTime = System.currentTimeMillis()
-                val lastWeekTransaction = filteredTransaction.filter {
-                    val tranDate = it.date
-                    val lastSevenDaysTransaction = currentTime - (7 * 24 * 60 * 60 * 1000)
-                    tranDate >= lastSevenDaysTransaction
-                }
-                val lastTransaction = lastWeekTransaction.sumOf { it.amount }
-                _uiState.value = _uiState.value.copy(
-                    maxTransaction = largestTransaction,
-                    lastWeek = lastTransaction
-
-                )
-            }
-        }
-    }
-
     fun resetState() {
         _uiState.value = TransactionState()
-    }
-
-    fun changeFormat(amount: String) {
-        val cleanedAmount = amount.replace(Regex("[^\\d.]"), "")
-        val amountAsDouble = cleanedAmount.toDoubleOrNull() ?: 0.0
-        viewModelScope.launch {
-            _uiState.update {
-                it.copy(totalAmount = amountAsDouble)
-            }
-        }
     }
 }

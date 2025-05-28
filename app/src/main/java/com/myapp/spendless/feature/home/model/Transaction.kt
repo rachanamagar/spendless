@@ -30,3 +30,4 @@ val categories = listOf(
     Categories( "Home", R.drawable.home),
     Categories( "Income", R.drawable.income),
 )
+
