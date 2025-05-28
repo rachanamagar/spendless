@@ -12,4 +12,9 @@
     <string name="user_name">username</string>
     <string name="enter_you_login_details">Enter you login details</string>
     <string name="welcome_back">" Welcome Back !"</string>
+    <string name="last_transaction">Last Transaction</string>
+    <string name="guest">Guest</string>
+    <string name="add_transaction">Add transaction</string>
+    <string name="account_balance">Account Balance</string>
+    <string name="your_largest_transaction_will_appear_here">Your Largest transaction will appear here</string>
 </resources>

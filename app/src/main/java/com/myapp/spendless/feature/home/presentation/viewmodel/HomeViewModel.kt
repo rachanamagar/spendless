@@ -75,7 +75,7 @@ class HomeViewModel @Inject constructor(
     }
 
     private fun getTotalAmount() = userTransactionFlow.value.sumOf {
-        if (it.category == "Income") it.amount else -it.amount
+        if (it.category == Category.INCOME.categoryName) it.amount else -it.amount
     }
 
     private fun saveTotalAmount() {
@@ -87,7 +87,7 @@ class HomeViewModel @Inject constructor(
     private fun getPopularCategory(transactions: List<Transaction>) =
         transactions
             .asSequence()
-            .filter { it.category != "Income" }
+            .filter { it.category != Category.INCOME.categoryName }
             .groupingBy { it.category }
             .eachCount()
             .entries
@@ -104,7 +104,7 @@ class HomeViewModel @Inject constructor(
                 7
             )
         }
-        ?.sumOf { if (it.category == "Income") it.amount else -it.amount }
+        ?.sumOf { if (it.category == Category.INCOME.categoryName) it.amount else -it.amount }
         ?.let { abs(it) }
         ?: 0.0)
 

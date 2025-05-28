@@ -1,13 +1,11 @@
 package com.myapp.spendless.feature.home.presentation.ui
 
 import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -30,7 +28,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.tooling.preview.Preview
@@ -41,27 +39,22 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.myapp.spendless.R
 import com.myapp.spendless.feature.Setting.formatTotalAmount
 import com.myapp.spendless.feature.Setting.toDollar
-import com.myapp.spendless.feature.home.model.Transaction
 import com.myapp.spendless.feature.home.presentation.component.AppTopBar
+import com.myapp.spendless.feature.home.presentation.component.BottomRow
 import com.myapp.spendless.feature.home.presentation.component.HighestTransactionSection
 import com.myapp.spendless.feature.home.presentation.component.PreviousWeekTransaction
 import com.myapp.spendless.feature.home.presentation.component.TransactionLayout
-import com.myapp.spendless.feature.home.presentation.component.TransactionList
 import com.myapp.spendless.feature.home.presentation.viewmodel.HomeViewModel
-import com.myapp.spendless.ui.theme.PrimaryContainer
 import com.myapp.spendless.ui.theme.PrimaryFixed
 import com.myapp.spendless.ui.theme.PrimaryOne
 import com.myapp.spendless.ui.theme.PrimaryText
 import com.myapp.spendless.ui.theme.SecondaryContainer
-import com.myapp.spendless.ui.theme.SurfaceBackground
-import java.text.NumberFormat
-import java.util.Locale
-import java.util.UUID
+import com.myapp.spendless.util.formatToTwoDecimal
+import com.myapp.spendless.util.toCurrencySymbol
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun HomeScreen(onSetting: () -> Unit, onCLicked: () -> Unit, onShowAll: () -> Unit) {
-
     val viewModel: HomeViewModel = hiltViewModel()
     val state by viewModel.uiState.collectAsStateWithLifecycle()
 
@@ -69,7 +62,7 @@ fun HomeScreen(onSetting: () -> Unit, onCLicked: () -> Unit, onShowAll: () -> Un
         topBar = {
             TopAppBar(
                 title = {
-                    AppTopBar(state.username ?: "Guest") {
+                    AppTopBar(state.username ?: stringResource(R.string.guest)) {
                         onSetting()
                     }
                 },
@@ -83,7 +76,10 @@ fun HomeScreen(onSetting: () -> Unit, onCLicked: () -> Unit, onShowAll: () -> Un
                 onClick = { onCLicked() },
                 containerColor = SecondaryContainer
             ) {
-                Icon(imageVector = Icons.Filled.Add, contentDescription = "Add transaction")
+                Icon(
+                    imageVector = Icons.Filled.Add,
+                    contentDescription = stringResource(R.string.add_transaction)
+                )
             }
         }
 
@@ -123,7 +119,7 @@ fun HomeScreen(onSetting: () -> Unit, onCLicked: () -> Unit, onShowAll: () -> Un
                     ) {
 
                         Text(
-                            text = state.currency ?: "$",
+                            text = state.currency.toCurrencySymbol(),
                             fontFamily = FontFamily(Font(R.font.fig_tree_medium)),
                             fontSize = 30.sp,
                             color = Color.White
@@ -143,7 +139,7 @@ fun HomeScreen(onSetting: () -> Unit, onCLicked: () -> Unit, onShowAll: () -> Un
 
                     }
                     Text(
-                        "Account Balance",
+                        stringResource(R.string.account_balance),
                         fontSize = 14.sp,
                         color = Color.White,
                         fontFamily = FontFamily(Font(R.font.fig_tree_medium))
@@ -176,7 +172,7 @@ fun HomeScreen(onSetting: () -> Unit, onCLicked: () -> Unit, onShowAll: () -> Un
                             state.maxTransaction?.let { TransactionLayout(it) }
                         } else {
                             Text(
-                                "Your Largest transaction will appear here",
+                                stringResource(R.string.your_largest_transaction_will_appear_here),
                                 fontSize = 16.sp,
                                 color = Color.Black,
                                 fontFamily = FontFamily(Font(R.font.fig_tree_medium)),
@@ -185,152 +181,16 @@ fun HomeScreen(onSetting: () -> Unit, onCLicked: () -> Unit, onShowAll: () -> Un
                         }
                     }
                 }
-
                 Spacer(modifier = Modifier.width(8.dp))
-                PreviousWeekTransaction(state.lastWeekTransactionAmount.formatToTwoDecimal().toDollar())
+                PreviousWeekTransaction(
+                    state.lastWeekTransactionAmount.formatToTwoDecimal().toDollar()
+                )
             }
-            ButtomRow(
+            BottomRow(
                 list = state.transactionList
             ) { onShowAll() }
         }
     }
-}
-
-@Composable
-fun ButtomRow(list: List<Transaction>, onShowAll: () -> Unit) {
-
-    Box(
-        modifier = Modifier
-            .fillMaxWidth()
-            .background(
-                PrimaryContainer.copy(alpha = 0.1f),
-                RoundedCornerShape(topStart = 16.dp, topEnd = 16.dp)
-            )
-    ) {
-        Column(
-            modifier = Modifier
-                .fillMaxWidth()
-                .fillMaxHeight()
-                // .height(442.dp)
-                .background(
-                    SurfaceBackground,
-                    shape = RoundedCornerShape(topStart = 16.dp, topEnd = 16.dp)
-                )
-                .padding(10.dp),
-            verticalArrangement = Arrangement.Center,
-            horizontalAlignment = Alignment.CenterHorizontally
-        ) {
-
-            if (list.isEmpty()) {
-                Icon(
-                    painter = painterResource(R.drawable.icon),
-                    contentDescription = null,
-                    tint = Color.Unspecified
-                )
-
-                Text(
-                    "No transactions to show",
-                    fontSize = 18.sp,
-                    color = Color.Black,
-                    fontFamily = FontFamily(Font(R.font.fig_tree_medium)),
-                )
-            } else {
-                Column(
-                    modifier = Modifier.fillMaxWidth(),
-                    horizontalAlignment = Alignment.Start
-                ) {
-
-                    Spacer(modifier = Modifier.height(10.dp))
-                    Row(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(top = 4.dp),
-                        horizontalArrangement = Arrangement.SpaceBetween,
-                        verticalAlignment = Alignment.CenterVertically
-                    ) {
-                        Text(
-                            "Last Transaction",
-                            fontSize = 18.sp,
-                            color = Color.Black,
-                            fontFamily = FontFamily(Font(R.font.fig_tree_medium)),
-                            modifier = Modifier
-                        )
-                        Text(text = "Show all",
-                            fontSize = 14.sp,
-                            color = PrimaryText,
-                            fontFamily = FontFamily(Font(R.font.fig_tree_medium)),
-                            modifier = Modifier.clickable { onShowAll() })
-                    }
-                    Spacer(modifier = Modifier.height(10.dp))
-                    TransactionList(list)
-                }
-            }
-        }
-    }
-}
-
-@Preview(showBackground = true)
-@Composable
-fun ButtonRowPreview() {
-    val cat = listOf(
-        Transaction(
-            id = 1,
-            title = "Decoration",
-            amount = "2000.0".toDouble(),
-            note = "Home decoration expenses",
-            icon = R.drawable.home,
-            category = "Home",
-            date = 2,
-            userId = UUID.randomUUID()
-        ), Transaction(
-            id = 1,
-            title = "Transportation",
-            amount = "2000.0".toDouble(),
-            note = "Home decoration expenses",
-            icon = R.drawable.transport,
-            category = "Home",
-            date = 1,
-            userId = UUID.randomUUID()
-        ),
-        Transaction(
-            id = 1,
-            title = "Food",
-            amount = "2000.0".toDouble(),
-            note = "Groceries",
-            icon = R.drawable.food,
-            category = "Home",
-            date = 1,
-            userId = UUID.randomUUID()
-        ), Transaction(
-            id = 1,
-            title = "Education",
-            amount = "2000.0".toDouble(),
-            note = "Course Book Purchase",
-            icon = R.drawable.education,
-            category = "Home",
-            date = 1,
-            userId = UUID.randomUUID()
-        )
-    )
-    ButtomRow(
-        list = cat
-    ) {}
-}
-
-fun Double.formatCurrency(): String {
-    val absValue = kotlin.math.abs(this)
-    val formattedValue = String.format(Locale.US, "%.2f", absValue)
-
-    return if (this < 0) "- $${formattedValue}" else "$${formattedValue}"
-}
-
-fun Double.formatToTwoDecimal(): String {
-    val formatter = NumberFormat.getNumberInstance(Locale.US).apply {
-        minimumFractionDigits = 2
-        maximumFractionDigits = 2
-        isGroupingUsed = true
-    }
-    return formatter.format(this)
 }
 
 @Preview(showBackground = true)
